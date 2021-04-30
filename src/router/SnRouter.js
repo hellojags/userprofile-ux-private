@@ -4,6 +4,7 @@ import Login from '../components/Auth/Login'
 import {
     Switch,
     Route,
+    HashRouter as Router,
     Redirect,
 } from "react-router-dom";
 const SnRouter = (props) => (

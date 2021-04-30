@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import MoreIcon from '@material-ui/icons/MoreVert'
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
 // logo
 import { ReactComponent as Logo } from '../../assets/img/icons/logo.svg'
 // icons custom
@@ -18,6 +19,7 @@ import { ReactComponent as LogoutIcon } from '../../assets/img/icons/exit-log-ou
 import { ReactComponent as NotificationIcon } from '../../assets/img/icons/notification.svg'
 import { ReactComponent as CustomMenuIcon } from '../../assets/img/icons/Icon ionic-ios-menu.svg'
 import { Box, Button, Tooltip, Typography } from '@material-ui/core'
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 // import { Translate } from '@material-ui/icons'
 import useWindowDimensions from '../../hooks/useWindowDimensions'
 import { setLoaderDisplay } from '../../redux/action-reducers-epic/SnLoaderAction'
@@ -28,6 +30,7 @@ import { useHistory } from "react-router-dom"
 import { getProfile, getPreferences } from '../../service/SnSkappService';
 import { setUserProfileAction } from '../../redux/action-reducers-epic/SnUserProfileAction';
 import { setUserPreferencesAction } from '../../redux/action-reducers-epic/SnUserPreferencesAction';
+import { skylinkToUrl } from "../../utils/SnUtility";
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
@@ -112,6 +115,18 @@ const useStyles = makeStyles((theme) => ({
             display: 'flex',
         },
     },
+    AccountBoxIcon: {
+        color: '#1DBF73'
+    },
+    logo: {
+        color: '#000',
+        fontSize: 20,
+        fontFamily: "Nunito",
+        fontWeight: "fontWeightBold",
+        '@media only screen and (max-width: 575px)': {
+            fontSize: 13,
+        },
+    },
     sectionMobile: {
         display: 'flex',
         [theme.breakpoints.up('md')]: {
@@ -190,12 +205,12 @@ export default function Navbar() {
     // alert("NAV--userSession:userID"+userSession?.userID);
     // alert("NAV--userSession:mysky"+userSession?.mySky);
     // alert("NAV--userSession:dac"+userSession?.dacs.userProfileDAC);
-    const [person, setPerson] = useState({ username: "MySky User" })
+    const [person, setPerson] = useState({ username: "MySky User", url: "" })
 
     const userProfile = useSelector((state) => state.snUserProfile)
     const userPreferences = useSelector((state) => state.snUserPreferences)
     useEffect(() => {
-        setPerson({ username: userProfile?.username })
+        setPerson({ username: userProfile?.username, url: userProfile?.avatar[0]?.url })
     }, [userProfile]);
 
     useEffect(() => {
@@ -209,7 +224,7 @@ export default function Navbar() {
                 console.log("#### On Refresh : Reload Redux State #### [userPrefrences]");
                 const userPrefrences = await getPreferences();
                 dispatch(setUserPreferencesAction(userPrefrences));
-        
+
             }
         }
         reloadReduxState();
@@ -309,9 +324,11 @@ export default function Navbar() {
             </MenuItem>
             <MenuItem onClick={handleProfileMenuOpen}>
                 <Button className={classes.usrIcon}>
-                    {/* <PersonOutlineIcon className={classes.avatarIcon} /> */}
-                    <img width="100%" src="https://siasky.net/DACbyw6auUWhumhBTaJLUhoCmSW8ifK7muvKvkTcz7nYhA"
-                        alt="" />
+                    {
+                        (person.url) ?
+                            <img width="100%" src={skylinkToUrl(person.url)} alt="" /> :
+                            <PersonOutlineIcon className={classes.avatarIcon} />
+                    }
                 </Button>
                 <Tooltip title={person.username} placement="top" arrow >
                     <Typography className={classes.userName} noWrap>{person.username}</Typography>
@@ -333,15 +350,19 @@ export default function Navbar() {
                         <CustomMenuIcon />
                     </IconButton>
                     <div className="logo-top" >
-                        <Logo />
+                        <AccountBoxIcon className={classes.AccountBoxIcon} style={{ fontSize: 44 }} />
+                        <Typography className={classes.logo}>
+                            SkyUser
+                        </Typography>
                     </div>
                     <div className={classes.sectionDesktop}>
                         <Box display="flex" alignItems="center" onClick={handleProfileMenuOpen}>
                             <Button className={classes.usrIcon} >
-                                {/* <PersonOutlineIcon className={classes.avatarIcon} />
-                                 */}
-                                <img width="100%" src="https://siasky.net/DACbyw6auUWhumhBTaJLUhoCmSW8ifK7muvKvkTcz7nYhA"
-                                    alt="" />
+                                {
+                                    (person.url) ?
+                                        <img width="100%" src={skylinkToUrl(person.url)} alt="" /> :
+                                        <PersonOutlineIcon className={classes.avatarIcon} />
+                                }
                             </Button>
                             <Tooltip title={person.username} placement="top" arrow >
                                 <Typography className={classes.userName} noWrap>{person.username}</Typography>

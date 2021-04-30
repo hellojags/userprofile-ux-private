@@ -108,7 +108,7 @@ const Login = () => {
             <form className="login-form">
                 <div>
                     {/* <Logo /> */}
-                    <h3> Manage Your UserProfile</h3>
+                    <h3> Manage Your Profile</h3>
                     <Button onClick={handleLogin}> Login using MySky
                     </Button>
                     <div className={classes.poweredBy}>

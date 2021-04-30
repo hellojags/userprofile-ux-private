@@ -372,7 +372,7 @@ return (
                                     {isLogoUploaded ? <Loader type="Oval" color="#57C074" height={50} width={50} /> : null}
                                 </div>
                                 <div className={classes.inputGuide}>
-                                    Max. size of 5 MB in: JPG or PNG.
+                                    JPG or PNG.
                                 </div>
                                 <input type="text" hidden />
                             </Box>
