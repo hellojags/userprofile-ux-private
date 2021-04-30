@@ -273,7 +273,7 @@ const Profile = () => {
 
 
     const setProfileFormicObj = (profile) => {
-        if (profile) {
+        if (profile && profile?.username) {
             formikObj.username[0] = `${profile?.username}`;
             formikObj.emailID[0] = `${profile?.emailID}`;
             formikObj.firstName[0] = `${profile?.firstName}`;
@@ -286,8 +286,8 @@ const Profile = () => {
             formikObj.github[0] = `${profile?.connections?.find(({ github }) => github)?.github ?? ""}`;
             formikObj.reddit[0] = `${profile?.connections?.find(({ reddit }) => reddit)?.reddit ?? ""}`;
             formikObj.telegram[0] = `${profile?.connections?.find(({ telegram }) => telegram)?.telegram ?? ""}`;
-            formikObj.topicsHidden[0] = profile?.topicsHidden;
-            formikObj.topicsDiscoverable[0] = profile?.topicsDiscoverable;
+            formikObj.topicsHidden[0] = profile?.topicsHidden ?? [[]];
+            formikObj.topicsDiscoverable[0] = profile?.topicsDiscoverable ?? [[]];
             if (profile?.avatar[0]?.url) {
                 formikObj.avatar = profile.avatar;
             }
@@ -298,220 +298,220 @@ const Profile = () => {
         }
 
     }
-    const submitProfileForm = async (values) => {
-        dispatch(setLoaderDisplay(true));
-        let profileJSON = {
-            username: values.username,
-            emailID: values.emailID,
-            firstName: values.firstName,
-            lastName: values.lastName,
-            contact: values.contact,
-            location: values.location,
-            aboutMe: values.aboutMe,
-            connections: [{ twitter: values.twitter }, { facebook: values.facebook }, { github: values.github }, { reddit: values.reddit }, { telegram: values.telegram }],
-            topicsHidden: values.topicsHidden,
-            topicsDiscoverable: values.topicsDiscoverable,
-            avatar: [values.avatar],
-        }
-        await setProfile(profileJSON);
-        dispatch(setUserProfileAction(profileJSON));
-        setIsSuccess(true);
-        dispatch(setLoaderDisplay(false));
-    };
+const submitProfileForm = async (values) => {
+    dispatch(setLoaderDisplay(true));
+    let profileJSON = {
+        username: values.username,
+        emailID: values.emailID,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        contact: values.contact,
+        location: values.location,
+        aboutMe: values.aboutMe,
+        connections: [{ twitter: values.twitter }, { facebook: values.facebook }, { github: values.github }, { reddit: values.reddit }, { telegram: values.telegram }],
+        topicsHidden: values.topicsHidden,
+        topicsDiscoverable: values.topicsDiscoverable,
+        avatar: [values.avatar],
+    }
+    await setProfile(profileJSON);
+    dispatch(setUserProfileAction(profileJSON));
+    setIsSuccess(true);
+    dispatch(setLoaderDisplay(false));
+};
 
-    return (
-        <div className={classes.ProfileRoot}>
-            <Box>
+return (
+    <div className={classes.ProfileRoot}>
+        <Box>
 
-                <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={isSuccess} autoHideDuration={5000}>
-                    <Alert onClose={handleClose} severity="success">
-                        User Profile Successfully Saved!
-                    </Alert>
-                </Snackbar>
-                <Snackbar aranchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={isError} autoHideDuration={5000}>
-                    <Alert onClose={handleClose} severity="error">
-                        Error Occurred while saving profile!
-                    </Alert>
-                </Snackbar>
-                {(isInitialDataAvailable) ?
-                    <Formik
-                        initialValues={getInitValAndValidationSchemaFromSnFormikObj(formikObj).initialValues}
-                        validationSchema={Yup.object(getInitValAndValidationSchemaFromSnFormikObj(formikObj).validationSchema)}
-                        validateOnChange={true}
-                        validateOnBlur={true}
-                        onSubmit={submitProfileForm}>
-                        {formik => (<form onSubmit={formik.handleSubmit}>
-                            <h2>Global User Profile  <Button className={classes.submitBtn} onClick={formik.handleSubmit}><Add /> Save Changes </Button>
-                            </h2>
-                            {/* <Typography className={classes.textInfo}>
+            <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={isSuccess} autoHideDuration={5000}>
+                <Alert onClose={handleClose} severity="success">
+                    User Profile Successfully Saved!
+                </Alert>
+            </Snackbar>
+            <Snackbar aranchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={isError} autoHideDuration={5000}>
+                <Alert onClose={handleClose} severity="error">
+                    Error Occurred while saving profile!
+                </Alert>
+            </Snackbar>
+            {(isInitialDataAvailable) ?
+                <Formik
+                    initialValues={getInitValAndValidationSchemaFromSnFormikObj(formikObj).initialValues}
+                    validationSchema={Yup.object(getInitValAndValidationSchemaFromSnFormikObj(formikObj).validationSchema)}
+                    validateOnChange={true}
+                    validateOnBlur={true}
+                    onSubmit={submitProfileForm}>
+                    {formik => (<form onSubmit={formik.handleSubmit}>
+                        <h2>Global User Profile  <Button className={classes.submitBtn} onClick={formik.handleSubmit}><Add /> Save Changes </Button>
+                        </h2>
+                        {/* <Typography className={classes.textInfo}>
                             This information can be edited from your profile page.
                         </Typography> */}
-                            <Box component="form">
-                                <Box>
-                                    <div className="d-none">
-                                        <SnUpload
-                                            name="files"
-                                            source={UPLOAD_SOURCE_NEW_HOSTING_IMG}
-                                            ref={imgUploadEleRef}
-                                            directoryMode={false}
-                                            onUpload={(obj) => handleImgUpload(obj, formik)}
-                                            uploadStarted={(e) => setIsLogoUploaded(e)}
-                                        />
-                                    </div>
-                                    <div className={classes.siteLogo} onClick={(evt) => handleDropZoneClick(evt, imgUploadEleRef)} >
-                                        {!isLogoUploaded && Object.keys(formik.values.avatar).length == 0 && <div className={classes.profilePlaceholder}>
-                                            <PersonOutlineIcon className={classes.avatarIcon} />
-                                        </div>}
-                                        {!isLogoUploaded && Object.keys(formik.values.avatar).length > 0 && <img
-                                            alt="app"
-                                            src={skylinkToUrl(formik.values.avatar.url)}
-                                            className={classes.siteLogo}
-                                            onClick={(evt) => handleDropZoneClick(evt, imgUploadEleRef)}
-                                            name="1"
-                                        />}
-                                        {isLogoUploaded ? <Loader type="Oval" color="#57C074" height={50} width={50} /> : null}
-                                    </div>
-                                    <div className={classes.inputGuide}>
-                                        Max. size of 5 MB in: JPG or PNG.
-                                    </div>
-                                    <input type="text" hidden />
-                                </Box>
+                        <Box component="form">
+                            <Box>
+                                <div className="d-none">
+                                    <SnUpload
+                                        name="files"
+                                        source={UPLOAD_SOURCE_NEW_HOSTING_IMG}
+                                        ref={imgUploadEleRef}
+                                        directoryMode={false}
+                                        onUpload={(obj) => handleImgUpload(obj, formik)}
+                                        uploadStarted={(e) => setIsLogoUploaded(e)}
+                                    />
+                                </div>
+                                <div className={classes.siteLogo} onClick={(evt) => handleDropZoneClick(evt, imgUploadEleRef)} >
+                                    {!isLogoUploaded && Object.keys(formik.values.avatar).length == 0 && <div className={classes.profilePlaceholder}>
+                                        <PersonOutlineIcon className={classes.avatarIcon} />
+                                    </div>}
+                                    {!isLogoUploaded && Object.keys(formik.values.avatar).length > 0 && <img
+                                        alt="app"
+                                        src={skylinkToUrl(formik.values.avatar.url)}
+                                        className={classes.siteLogo}
+                                        onClick={(evt) => handleDropZoneClick(evt, imgUploadEleRef)}
+                                        name="1"
+                                    />}
+                                    {isLogoUploaded ? <Loader type="Oval" color="#57C074" height={50} width={50} /> : null}
+                                </div>
+                                <div className={classes.inputGuide}>
+                                    Max. size of 5 MB in: JPG or PNG.
+                                </div>
+                                <input type="text" hidden />
+                            </Box>
 
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInput
-                                            label={<span> Username <span style={{ color: 'red' }}>*</span></span>}
-                                            name="username"
-                                            className={classes.input}
-                                            type="text"
-                                        />
-                                    </Box>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInput
-                                            label="First Name"
-                                            name="firstName"
-                                            className={classes.input}
-                                            type="text"
-                                        />
-                                    </Box>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInput
-                                            label="Last Name"
-                                            name="lastName"
-                                            className={classes.input}
-                                            type="text"
-                                        />
-                                    </Box>
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInput
+                                        label={<span> Username <span style={{ color: 'red' }}>*</span></span>}
+                                        name="username"
+                                        className={classes.input}
+                                        type="text"
+                                    />
                                 </Box>
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInput
-                                            label="Location"
-                                            name="location"
-                                            className={classes.input}
-                                            type="text"
-                                        />
-                                    </Box>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInput
-                                            label="Email"
-                                            name="emailID"
-                                            className={classes.input}
-                                            type="text"
-                                        />
-                                    </Box>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInput
-                                            label="Contact"
-                                            name="contact"
-                                            className={classes.input}
-                                            type="text"
-                                        />
-                                    </Box>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInput
+                                        label="First Name"
+                                        name="firstName"
+                                        className={classes.input}
+                                        type="text"
+                                    />
                                 </Box>
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextArea
-                                            label="About me"
-                                            name="aboutMe"
-                                            className={classes.input}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInputTag
-                                            label="Topics Hidden"
-                                            name="topicsHidden"
-                                            className={classes.input}
-                                        />
-                                    </Box>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnTextInputTag
-                                            label="Topics Discoverable"
-                                            name="topicsDiscoverable"
-                                            className={classes.input}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <label>Social Connections</label>
-                                    </Box>
-                                </Box>
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnInputWithIcon
-                                            icon={<GitHub />}
-                                            label="Github"
-                                            name="github"
-                                            type="text"
-                                        />
-                                    </Box>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnInputWithIcon
-                                            icon={<Twitter />}
-                                            label="Twitter"
-                                            name="twitter"
-                                            type="text"
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnInputWithIcon
-                                            icon={<Facebook />}
-                                            label="Facebook"
-                                            name="facebook"
-                                            type="text"
-                                        />
-                                    </Box>
-                                    <Box className={`${classes.inputContainer}`} flex={1}>
-                                        <SnInputWithIcon
-                                            icon={<Reddit />}
-                                            label="Reddit"
-                                            name="reddit"
-                                            type="text"
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box display='flex' className={`${classes.formRow} formSiteRow`}>
-                                    <Box className={`${classes.inputContainer}`} flex={0.5}>
-                                        <SnInputWithIcon
-                                            icon={<Telegram />}
-                                            label="Telegram"
-                                            name="telegram"
-                                            type="text"
-                                        />
-                                    </Box>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInput
+                                        label="Last Name"
+                                        name="lastName"
+                                        className={classes.input}
+                                        type="text"
+                                    />
                                 </Box>
                             </Box>
-                        </form>)}
-                    </Formik>
-                    : null}
-            </Box>
-        </div>
-    )
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInput
+                                        label="Location"
+                                        name="location"
+                                        className={classes.input}
+                                        type="text"
+                                    />
+                                </Box>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInput
+                                        label="Email"
+                                        name="emailID"
+                                        className={classes.input}
+                                        type="text"
+                                    />
+                                </Box>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInput
+                                        label="Contact"
+                                        name="contact"
+                                        className={classes.input}
+                                        type="text"
+                                    />
+                                </Box>
+                            </Box>
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextArea
+                                        label="About me"
+                                        name="aboutMe"
+                                        className={classes.input}
+                                    />
+                                </Box>
+                            </Box>
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInputTag
+                                        label="Topics Hidden"
+                                        name="topicsHidden"
+                                        className={classes.input}
+                                    />
+                                </Box>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnTextInputTag
+                                        label="Topics Discoverable"
+                                        name="topicsDiscoverable"
+                                        className={classes.input}
+                                    />
+                                </Box>
+                            </Box>
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <label>Social Connections</label>
+                                </Box>
+                            </Box>
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnInputWithIcon
+                                        icon={<GitHub />}
+                                        label="Github"
+                                        name="github"
+                                        type="text"
+                                    />
+                                </Box>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnInputWithIcon
+                                        icon={<Twitter />}
+                                        label="Twitter"
+                                        name="twitter"
+                                        type="text"
+                                    />
+                                </Box>
+                            </Box>
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnInputWithIcon
+                                        icon={<Facebook />}
+                                        label="Facebook"
+                                        name="facebook"
+                                        type="text"
+                                    />
+                                </Box>
+                                <Box className={`${classes.inputContainer}`} flex={1}>
+                                    <SnInputWithIcon
+                                        icon={<Reddit />}
+                                        label="Reddit"
+                                        name="reddit"
+                                        type="text"
+                                    />
+                                </Box>
+                            </Box>
+                            <Box display='flex' className={`${classes.formRow} formSiteRow`}>
+                                <Box className={`${classes.inputContainer}`} flex={0.5}>
+                                    <SnInputWithIcon
+                                        icon={<Telegram />}
+                                        label="Telegram"
+                                        name="telegram"
+                                        type="text"
+                                    />
+                                </Box>
+                            </Box>
+                        </Box>
+                    </form>)}
+                </Formik>
+                : null}
+        </Box>
+    </div>
+)
 }
 
 export default Profile
