@@ -210,7 +210,8 @@ export default function Navbar() {
     const userProfile = useSelector((state) => state.snUserProfile)
     const userPreferences = useSelector((state) => state.snUserPreferences)
     useEffect(() => {
-        setPerson({ username: userProfile?.username, url: userProfile?.avatar[0]?.url })
+        let avatarURl =  userProfile?.avatar ? userProfile?.avatar[0]?.url: null;
+        setPerson({ username: userProfile?.username, url: avatarURl })
     }, [userProfile]);
 
     useEffect(() => {

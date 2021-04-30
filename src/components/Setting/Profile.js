@@ -273,6 +273,7 @@ const Profile = () => {
 
 
     const setProfileFormicObj = (profile) => {
+        //console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ profile from DAC ="+ JSON.stringify(profile))
         if (profile && profile?.username) {
             formikObj.username[0] = `${profile?.username}`;
             formikObj.emailID[0] = `${profile?.emailID}`;
@@ -288,7 +289,7 @@ const Profile = () => {
             formikObj.telegram[0] = `${profile?.connections?.find(({ telegram }) => telegram)?.telegram ?? ""}`;
             formikObj.topicsHidden[0] = profile?.topicsHidden ?? [[]];
             formikObj.topicsDiscoverable[0] = profile?.topicsDiscoverable ?? [[]];
-            if (profile?.avatar[0]?.url) {
+            if (profile?.avatar && profile?.avatar[0]?.url) {
                 formikObj.avatar = profile.avatar;
             }
             setFormikObj(formikObj)
