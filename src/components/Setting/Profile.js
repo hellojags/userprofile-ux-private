@@ -1,8 +1,6 @@
 import {
-  Avatar,
   Box,
   Button,
-  Collapse,
   Grid,
   IconButton,
   makeStyles,
@@ -248,7 +246,6 @@ const Profile = () => {
   const [isError, setIsError] = useState(false); // to show Model
   const [formikObj, setFormikObj] = useState(initailValueFormikObj); // to store Formik Form data
   const [isLogoUploaded, setIsLogoUploaded] = useState(false);
-  const [showAvatarList, setShowAvatarList] = useState(false);
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -355,15 +352,17 @@ const Profile = () => {
     arrayHelpers.remove(ind);
   };
 
-  const toggleAvatarListVisibility = () => {
-    setShowAvatarList((show) => !show);
-    console.log(avatarList.length);
-  };
+  const generateRandomAvatarUrl = (setFieldValue) => () => {
+    let rand = Math.floor(Math.random() * (0 - 99) + 99);
 
-  const handleAvatarClick = (setFieldValue, imgUrl) => () => {
-    setFieldValue("avatar", {
-      url: imgUrl,
-    });
+    const imgObj = {
+      ext: "jpeg",
+      w: 300,
+      h: 300,
+      url: `sia://RABycdgWznT8YeIk57CDE9w0CiwWeHi7JoYOyTwq_UaSXQ/${rand}/300`,
+    };
+
+    setFieldValue("avatar", imgObj);
   };
 
   return (
@@ -436,7 +435,7 @@ const Profile = () => {
                       }
                     >
                       {!isLogoUploaded &&
-                        Object.keys(values.avatar).length == 0 && (
+                        Object.keys(values.avatar).length === 0 && (
                           <div className={classes.profilePlaceholder}>
                             <PersonOutlineIcon className={classes.avatarIcon} />
                           </div>
@@ -470,26 +469,10 @@ const Profile = () => {
                     variant="contained"
                     color="primary"
                     disableElevation
-                    onClick={toggleAvatarListVisibility}
+                    onClick={generateRandomAvatarUrl(formik.setFieldValue)}
                   >
                     Choose Random Avatar
                   </Button>
-
-                  <Collapse in={showAvatarList}>
-                    <Box display="flex" flexWrap="wrap" my="1rem">
-                      {avatarList.map((item, ind) => (
-                        <Avatar
-                          className={classes.small_avatar}
-                          src={item}
-                          key={item}
-                          onClick={handleAvatarClick(
-                            formik.setFieldValue,
-                            item
-                          )}
-                        />
-                      ))}
-                    </Box>
-                  </Collapse>
 
                   <Box
                     display="flex"
@@ -671,19 +654,21 @@ const Profile = () => {
 };
 
 const avatarList = [
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=PastelRed&clotheType=BlazerShirt&eyeType=WinkWacky&eyebrowType=UpDownNatural&facialHairColor=Platinum&facialHairType=BeardMedium&graphicType=Resist&hairColor=Platinum&hatColor=Blue01&mouthType=Eating&skinColor=Tanned&topType=LongHairDreads",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Black&clotheType=ShirtVNeck&eyeType=Cry&eyebrowType=DefaultNatural&facialHairColor=BrownDark&facialHairType=MoustacheFancy&graphicType=SkullOutline&hairColor=Auburn&hatColor=Heather&mouthType=Tongue&skinColor=Black&topType=LongHairBigHair",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=White&clotheType=ShirtScoopNeck&eyeType=Hearts&eyebrowType=UpDownNatural&facialHairColor=Platinum&facialHairType=BeardLight&graphicType=Selena&hairColor=Red&hatColor=PastelRed&mouthType=Tongue&skinColor=Tanned&topType=ShortHairDreads02",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Heather&clotheType=ShirtVNeck&eyeType=Cry&eyebrowType=UnibrowNatural&facialHairColor=BrownDark&facialHairType=MoustacheFancy&graphicType=Deer&hairColor=SilverGray&hatColor=PastelYellow&mouthType=Twinkle&skinColor=Brown&topType=LongHairFrida",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Heather&clotheType=ShirtCrewNeck&eyeType=Default&eyebrowType=UpDownNatural&facialHairColor=Red&facialHairType=BeardMedium&graphicType=Resist&hairColor=PastelPink&hatColor=Black&mouthType=Tongue&skinColor=Brown&topType=ShortHairShortWaved",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Heather&clotheType=BlazerShirt&eyeType=Squint&eyebrowType=FlatNatural&facialHairColor=Brown&facialHairType=BeardMedium&graphicType=Diamond&hairColor=Brown&hatColor=Black&mouthType=Eating&skinColor=Pale&topType=LongHairCurly",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Red&clotheType=BlazerSweater&eyeType=Squint&eyebrowType=FlatNatural&facialHairColor=Black&facialHairType=BeardMajestic&graphicType=Selena&hairColor=PastelPink&hatColor=Gray01&mouthType=Vomit&skinColor=Brown&topType=Hat",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=PastelOrange&clotheType=CollarSweater&eyeType=Side&eyebrowType=UpDownNatural&facialHairColor=Brown&facialHairType=BeardMajestic&graphicType=Diamond&hairColor=PastelPink&hatColor=Blue03&mouthType=Default&skinColor=Tanned&topType=ShortHairDreads01",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Blue01&clotheType=ShirtCrewNeck&eyeType=WinkWacky&eyebrowType=SadConcernedNatural&facialHairColor=Red&facialHairType=MoustacheFancy&graphicType=Deer&hairColor=Brown&hatColor=Pink&mouthType=Sad&skinColor=Yellow&topType=LongHairNotTooLong",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Pink&clotheType=Hoodie&eyeType=Side&eyebrowType=UpDown&facialHairColor=Brown&facialHairType=Blank&graphicType=Pizza&hairColor=BlondeGolden&hatColor=Blue03&mouthType=Grimace&skinColor=Black&topType=LongHairFroBand",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=PastelRed&clotheType=Hoodie&eyeType=Happy&eyebrowType=SadConcerned&facialHairColor=BrownDark&facialHairType=MoustacheMagnum&graphicType=Bat&hairColor=BlondeGolden&hatColor=Blue03&mouthType=Tongue&skinColor=Black&topType=LongHairNotTooLong",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Black&clotheType=ShirtVNeck&eyeType=Close&eyebrowType=UnibrowNatural&facialHairColor=Brown&facialHairType=MoustacheMagnum&graphicType=Selena&hairColor=Red&hatColor=Blue03&mouthType=Smile&skinColor=Light&topType=ShortHairShortFlat",
-  "https://avataaars.io/?avatarStyle=Transparent&clotheColor=Black&clotheType=ShirtCrewNeck&eyeType=Hearts&eyebrowType=UnibrowNatural&facialHairColor=BrownDark&facialHairType=BeardLight&graphicType=Skull&hairColor=Red&hatColor=Heather&mouthType=Tongue&skinColor=DarkBrown&topType=Eyepatch",
+  "/assets/images/avataaars-1.png",
+  "/assets/images/avataaars-2.png",
+  "/assets/images/avataaars-4.png",
+  "/assets/images/avataaars-5.png",
+  "/assets/images/avataaars-6.png",
+  "/assets/images/avataaars-7.png",
+  "/assets/images/avataaars-8.png",
+  "/assets/images/avataaars-9.png",
+  "/assets/images/avataaars-10.png",
+  "/assets/images/avataaars-11.png",
+  "/assets/images/avataaars-12.png",
+  "/assets/images/avataaars-13.png",
+  "/assets/images/avataaars-14.png",
+  "/assets/images/avataaars-15.png",
+  "/assets/images/avataaars-16.png",
 ];
 
 export default Profile;

@@ -153,10 +153,18 @@ export const SnTextInput = ({ label, className, showError, ...props }) => {
 export const SnSwitch = ({ label, className, showError, ...props }) => {
   const [field, meta] = useField(props);
   const { submitCount } = useFormikContext();
+
+  console.log(field.value.toString());
+  console.log(field.value.toString() === "true");
+
   return (
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
-      <Switch defaultChecked={field.value} {...field} {...props} />
+      <Switch
+        checked={field.value.toString() === "true"}
+        {...field}
+        {...props}
+      />
       {(showError ?? true) && submitCount > 0 && meta.error ? (
         <div className="required-field">{meta.error}</div>
       ) : null}

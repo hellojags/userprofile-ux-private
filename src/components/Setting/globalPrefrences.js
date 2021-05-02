@@ -4,10 +4,8 @@ import Alert from "@material-ui/lab/Alert";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as Yup from "yup";
 import { setLoaderDisplay } from "../../redux/action-reducers-epic/SnLoaderAction";
 import { setUserPreferencesAction } from "../../redux/action-reducers-epic/SnUserPreferencesAction";
-import { getInitValAndValidationSchemaFromSnFormikObj } from "../../service/SnFormikUtilService";
 import { setPreferences } from "../../service/SnSkappService";
 import { SnSelect, SnSwitch } from "../Utils/SnFormikControlls";
 
@@ -195,8 +193,8 @@ const portalOptions = [
   { value: "https://skyportal.xyz", label: "https://skyportal.xyz" },
 ];
 const initailValueFormikObGB = {
-  darkmode: [true],
-  portal: ["https://siasky.net"],
+  darkmode: true,
+  portal: "https://siasky.net",
 };
 
 const GlobalPrefrences = () => {
@@ -208,17 +206,11 @@ const GlobalPrefrences = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setPreferencesFormicOb(userPreferences);
+    setFormikObGB({
+      darkmode: userPreferences?.darkmode,
+      portal: userPreferences?.portal,
+    });
   }, [userPreferences]);
-
-  const setPreferencesFormicOb = (preferences) => {
-    console.log(preferences);
-    if (preferences) {
-      formikObjGB.darkmode[0] = `${preferences?.darkmode}`;
-      formikObjGB.portal[0] = `${preferences?.portal}`;
-    }
-    setFormikObGB(formikObjGB);
-  };
 
   const submitGlobalPreferencesForm = async (values) => {
     dispatch(setLoaderDisplay(true));
@@ -268,14 +260,7 @@ const GlobalPrefrences = () => {
         )}
         {
           <Formik
-            initialValues={
-              getInitValAndValidationSchemaFromSnFormikObj(formikObjGB)
-                .initialValues
-            }
-            validationSchema={Yup.object(
-              getInitValAndValidationSchemaFromSnFormikObj(formikObjGB)
-                .validationSchema
-            )}
+            initialValues={formikObjGB}
             validateOnChange={true}
             validateOnBlur={true}
             enableReinitialize={true}
