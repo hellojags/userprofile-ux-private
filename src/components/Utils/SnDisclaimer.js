@@ -1,6 +1,5 @@
-import React from "react"
-
-import "./SnDisclaimer.css"
+import React from "react";
+import "./SnDisclaimer.css";
 
 function SnDisclaimer(props) {
   return (
@@ -27,6 +26,6 @@ function SnDisclaimer(props) {
         </div>
       </div>
     </div>
-  )
+  );
 }
-export default SnDisclaimer
+export default SnDisclaimer;

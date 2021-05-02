@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import React, { useEffect, useRef, useState } from "react";
+import { Copy, File, FileCheck, FileError } from "../svg";
+import LoadingSpinner from "./LoadingSpinner";
 import "./UploadFile.scss";
-import { File, FileCheck, FileError, Copy } from "../svg";
-import LoadingSpinner from './LoadingSpinner';
 
 export default function UploadFile({ file, url, status, progress, error }) {
   const [copied, setCopied] = useState(false);
@@ -53,9 +53,16 @@ export default function UploadFile({ file, url, status, progress, error }) {
         <p>
           {status === "uploading" && getProgressText(progress)}
           {status === "processing" && "Processing..."}
-          {status === "error" && <span className="red-text">{error || "Upload failed."}</span>}
+          {status === "error" && (
+            <span className="red-text">{error || "Upload failed."}</span>
+          )}
           {status === "complete" && (
-            <a href={url} className="url green-text" target="_blank" rel="noopener noreferrer">
+            <a
+              href={url}
+              className="url green-text"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {url}
             </a>
           )}

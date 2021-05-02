@@ -79,7 +79,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -102,8 +102,11 @@
     ]
   },
   "devDependencies": {
+    "babel-plugin-import": "^1.13.3",
+    "customize-cra": "^1.0.0",
     "envify": "^4.1.0",
     "prettier": "2.2.1",
+    "react-app-rewired": "^2.1.8",
     "redux-devtools-extension": "^2.13.8",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-replace": "^2.2.0",

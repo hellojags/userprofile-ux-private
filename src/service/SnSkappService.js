@@ -1,76 +1,73 @@
 import imageCompression from "browser-image-compression";
-import { uploadFile } from './SnSkynet'
-import { getUserID, getProfileDAC } from './skynet-api'
+import { getProfileDAC, getUserID } from "./skynet-api";
+import { uploadFile } from "./SnSkynet";
 
 export const getProfile = async () => {
   try {
     //set options
     const profileDAC = await getProfileDAC();
     //return await getFile_MySky("userProfile", { skydb: true })?.data
-    const userID = await getUserID()
+    const userID = await getUserID();
     return await profileDAC.getProfile(userID);
     //return JSON.parse(BROWSER_STORAGE.getItem('userProfile'));
-  }
-  catch (e) {
-    console.log("profileDAC.getProfile : failed =" + e)
+  } catch (e) {
+    console.log("profileDAC.getProfile : failed =" + e);
     return null;
   }
   // getFile_MySky( "userProfile", { skydb: true })
-}
+};
 
 export const setProfile = async (profileJSON) => {
   //set options
   //const resultObj = await putFile_MySky("userProfile", profileJSON, { skydb: true });
   //BROWSER_STORAGE.setItem('userProfile', JSON.stringify(profileJSON));
-  let resultObj = null;
   try {
     const profileDAC = await getProfileDAC();
-    resultObj = await profileDAC.setProfile(profileJSON);
+    await profileDAC.setProfile(profileJSON);
     const profile = await getProfile();
-    console.log("profileDAC.setProfile : After write : =" + profile)
+    console.log("profileDAC.setProfile : After write : =" + profile);
     //await getContentDAC().recordNewContent({ skylink: resultObj.skylink, metadata: { "contentType": "userprofile", "action": "update" } });
     return profileJSON;
-  }
-  catch (e) {
-    console.log("profileDAC.setProfile : failed =" + e)
+  } catch (e) {
+    console.log("profileDAC.setProfile : failed =" + e);
   }
   return {};
   // await putFile_MySky("userProfile", profileJSON, { skydb: true });
-}
+};
 
 export const getPreferences = async () => {
   try {
     //set options
     const profileDAC = await getProfileDAC();
     //return await getFile_MySky("userProfile", { skydb: true })?.data
-    const userID = await getUserID()
+    const userID = await getUserID();
     return await profileDAC.getPreferences(userID);
     //return JSON.parse(BROWSER_STORAGE.getItem('userProfile'));
-  }
-  catch (e) {
-    console.log("profileDAC.getPreferences : failed =" + e)
+  } catch (e) {
+    console.log("profileDAC.getPreferences : failed =" + e);
     return null;
   }
-
-}
+};
 export const setPreferences = async (preferencesJSON) => {
-  let resultObj = null;
   try {
     const profileDAC = await getProfileDAC();
     //set options
-    resultObj = await profileDAC.setPreferences(preferencesJSON);
+    await profileDAC.setPreferences(preferencesJSON);
     //await getContentDAC().recordNewContent({ skylink: resultObj.skylink, metadata: { "contentType": "preferences", "action": "update" } });
     return preferencesJSON;
-  }
-  catch (e) {
-    console.log("profileDAC.setPreferences : failed =" + e)
+  } catch (e) {
+    console.log("profileDAC.setPreferences : failed =" + e);
   }
   return {};
-}
+};
 // ### Following/Followers Functionality ###
 
 //action for upload videos and images
-export const UploadAppLogo = async (file, setLogoUploaded, logoLoaderHandler) => {
+export const UploadAppLogo = async (
+  file,
+  setLogoUploaded,
+  logoLoaderHandler
+) => {
   try {
     const getCompressed = await imageCompression(file, {
       maxSizeMB: 1,

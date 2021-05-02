@@ -1,8 +1,7 @@
-import imageCompression from "browser-image-compression";
-import {DEFAULT_PORTAL} from "./SnConstants";
-import base64 from "base64-js";
 import base32Encode from "base32-encode";
-import store from "../redux";
+import base64 from "base64-js";
+import imageCompression from "browser-image-compression";
+import { DEFAULT_PORTAL } from "./SnConstants";
 
 export function decodeBase64(input = "") {
   return base64.toByteArray(
@@ -19,41 +18,35 @@ export function getBase32Skylink(skylink) {
 }
 
 export const getCompatibleTags = (resCategory) => {
-  let category = []
+  let category = [];
   if (resCategory != null) {
     if (Array.isArray(resCategory)) {
-      category = resCategory.map((cat) => cat.toLowerCase())
+      category = resCategory.map((cat) => cat.toLowerCase());
     } else {
-      category = [resCategory.toLowerCase()]
+      category = [resCategory.toLowerCase()];
     }
   }
-  return JSON.parse(JSON.stringify(category))
-}
+  return JSON.parse(JSON.stringify(category));
+};
 
 export const getSkyspaceListForCarousalMenu = (snSkyspaceList) => {
   if (snSkyspaceList != null) {
-    const carousalMenuObj = {}
+    const carousalMenuObj = {};
     snSkyspaceList.forEach((skyspace) => {
       carousalMenuObj[skyspace] = {
         label: skyspace,
-      }
-    })
-    return carousalMenuObj
+      };
+    });
+    return carousalMenuObj;
   }
-}
+};
 /** Start : Skynet Methods * */
 export const getPortal = () => {
   // let skynetPortal = store.getState().snUserSetting?.setting?.portal
   // skynetPortal =
   //   skynetPortal && skynetPortal.trim() !== "" ? skynetPortal : DEFAULT_PORTAL
-  return "https://siasky.net/"
-}
-
-// It will generate base32 url for any Skapp
-const getbase32URlForSkapp = (skylink) => {
-  let base32URL = null;
-  return base32URL;
-}
+  return "https://siasky.net/";
+};
 
 // // I think we can use idp field in session object for this
 // export const getUserSessionType = (userSession) => {
@@ -69,7 +62,7 @@ const getbase32URlForSkapp = (skylink) => {
 
 /**
  * Compresses Image file to Skyspace params. Returns an Object of type File
- * 
+ *
  * @param {File} originalFile Original File.
  */
 
@@ -84,10 +77,10 @@ export const getCompressedImageFile = async (originalFile) => {
 
 /**
  * Generates thumbnail image file out of the first frame of the video file.
- * 
+ *
  * @param {Object} Object
  * @param {string?} Object.url - The video source Url.
- * @param {string?} Object.file - Optional video file object reference. If the Url s not provided, 
+ * @param {string?} Object.file - Optional video file object reference. If the Url s not provided,
  * then this property must have a value. If the url does have a valu then this property will be ignored.
  */
 
@@ -96,7 +89,7 @@ export const generateThumbnailFromVideo = async ({ file, url }) => {
   const videoPromise = new Promise((resolve) => {
     videoResolve = resolve;
   });
-  let video = document.createElement('video');
+  let video = document.createElement("video");
   video.crossOrigin = "anonymous";
   video.src = url ? url : URL.createObjectURL(file);
   video.load();
@@ -107,8 +100,8 @@ export const generateThumbnailFromVideo = async ({ file, url }) => {
 
 /**
  * Takes a video element and that has image already loaded and returns an image file which is a thumbnail
- * generated out of the first frame of the video 
- * 
+ * generated out of the first frame of the video
+ *
  * @param {Element} video Video Element.
  */
 
@@ -131,7 +124,9 @@ export const getPortalFromUserSetting = (userSetting) => {
 
 export const skylinkToUrl = (skyLink, userSetting) => {
   let link = "";
-  const portal = userSetting ? getPortalFromUserSetting(userSetting) : DEFAULT_PORTAL;
+  const portal = userSetting
+    ? getPortalFromUserSetting(userSetting)
+    : DEFAULT_PORTAL;
   if (skyLink.indexOf("http://") === 0 || skyLink.indexOf("https://") === 0) {
     link = skyLink;
   } else if (skyLink.indexOf("sia://") === 0) {
@@ -144,7 +139,8 @@ export const skylinkToUrl = (skyLink, userSetting) => {
   return link;
 };
 
-export const hashFromSkylinkUploadResponse = (response) => response.skylink.replace("sia:", "");
+export const hashFromSkylinkUploadResponse = (response) =>
+  response.skylink.replace("sia:", "");
 
 export const launchSkyLink = (skyLink, userSetting) => {
   const link = skylinkToUrl(skyLink, userSetting);
@@ -156,30 +152,42 @@ export const launchSkyLink = (skyLink, userSetting) => {
 export const flattenObject = (obj) => {
   const flattened = {};
   Object.keys(obj).forEach((key) => {
-    if (typeof obj[key] === 'object' && obj[key] !== null) {
+    if (typeof obj[key] === "object" && obj[key] !== null) {
       Object.assign(flattened, flattenObject(obj[key]));
     } else {
-      flattened[key] = obj[key]
+      flattened[key] = obj[key];
     }
   });
   return flattened;
 };
 
 /**
- * 
+ *
  * @param {String} searchStr Required. The string to search for in the object
- * @param {Object} obj Required. The object in which the searchStr will be searched. 
- * 
- * @description Searches for the searchStr in the value of every leaf node of the object. 
+ * @param {Object} obj Required. The object in which the searchStr will be searched.
+ *
+ * @description Searches for the searchStr in the value of every leaf node of the object.
  * The method performs a case agnostic substring search. It returns true id searchStr in null.
  */
 export const isStrInObj = (searchStr, obj) => {
   if (obj) {
     const flattenedObj = flattenObject(obj);
-    return (searchStr == null) || Object.keys(flattenedObj).some(key => flattenedObj[key] != null && flattenedObj[key].toString().toLowerCase().includes(searchStr.toLowerCase()));
+    return (
+      searchStr == null ||
+      Object.keys(flattenedObj).some(
+        (key) =>
+          flattenedObj[key] != null &&
+          flattenedObj[key]
+            .toString()
+            .toLowerCase()
+            .includes(searchStr.toLowerCase())
+      )
+    );
   } else {
     return true;
   }
 };
-export const genHostedAppSkappUrl = (hostedAppDetail) => hostedAppDetail?.content?.hns && hostedAppDetail?.content?.storageGateway &&
+export const genHostedAppSkappUrl = (hostedAppDetail) =>
+  hostedAppDetail?.content?.hns &&
+  hostedAppDetail?.content?.storageGateway &&
   `https://${hostedAppDetail.content.hns}.hns.${hostedAppDetail.content.storageGateway}`;

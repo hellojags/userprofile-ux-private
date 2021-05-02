@@ -1,4 +1,4 @@
-import { SkynetClient} from "skynet-js"
+import { SkynetClient } from "skynet-js";
 
 const skynetClient = new SkynetClient("https://siasky.net");
 
@@ -11,4 +11,4 @@ export const uploadFile = async (file) => {
     console.log(error);
     return null;
   }
-}
+};
