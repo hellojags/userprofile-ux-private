@@ -337,13 +337,13 @@ export default function Navbar() {
           >
             <CustomMenuIcon />
           </IconButton>
-          <div className="logo-top">
+          <Box className="logo-top" display="flex" alignItems="center">
             <AccountBoxIcon
               className={classes.AccountBoxIcon}
-              style={{ fontSize: 44 }}
+              style={{ fontSize: 44, marginRight: 8 }}
             />
             <Typography className={classes.logo}>SkyUser</Typography>
-          </div>
+          </Box>
           <div className={classes.sectionDesktop}>
             <Box
               display="flex"
