@@ -24,7 +24,6 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import { setLoaderDisplay } from "../../redux/action-reducers-epic/SnLoaderAction";
 import { setUserProfileAction } from "../../redux/action-reducers-epic/SnUserProfileAction";
-import { getInitValAndValidationSchemaFromSnFormikObj } from "../../service/SnFormikUtilService";
 import { setProfile } from "../../service/SnSkappService";
 import SnUpload from "../../uploadUtil/SnUpload";
 import { UPLOAD_SOURCE_NEW_HOSTING_IMG } from "../../utils/SnConstants";
@@ -59,6 +58,15 @@ const useStyles = makeStyles((theme) => ({
     "@media only screen and (max-width: 575px)": {
       fontSize: 13,
     },
+  },
+  addBtn: {
+    border: `1px solid ${theme.palette.primary.main}`,
+    color: theme.palette.primary.main,
+  },
+  removeBtn: {
+    border: `1px solid ${theme.palette.error.main}`,
+    color: theme.palette.error.main,
+    marginTop: 63,
   },
   submitBtn: {
     float: "right",
@@ -210,26 +218,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required("This field is required"),
+  emailID: Yup.string()
+    .email("Invalid email")
+    .required("This field is required"),
+  contact: Yup.string().required("This field is required"),
+  otherConnections: Yup.array().of(
+    Yup.object().shape({
+      channel: Yup.string().required("This field is required"),
+      url: Yup.string().required("This field is required"),
+    })
+  ),
+});
+
 const initailValueFormikObj = {
-  username: ["", Yup.string().required("This field is required")],
-  emailID: [
-    "",
-    Yup.string().email("Invalid email").required("This field is required"),
-  ],
-  firstName: [""],
-  lastName: [""],
-  contact: ["", Yup.string().required("This field is required")],
-  aboutMe: [""],
-  location: [""],
-  topicsHidden: [[]],
-  topicsDiscoverable: [[]],
-  avatar: [{}],
-  facebook: [""],
-  twitter: [""],
-  github: [""],
-  reddit: [""],
-  telegram: [""],
-  otherConnections: [[]],
+  username: "",
+  emailID: "",
+  firstName: "",
+  lastName: "",
+  contact: "",
+  aboutMe: "",
+  location: "",
+  topicsHidden: [],
+  topicsDiscoverable: [],
+  avatar: {},
+  facebook: "",
+  twitter: "",
+  github: "",
+  reddit: "",
+  telegram: "",
+  otherConnections: [],
 };
 
 const socialConnectionList = [
@@ -280,35 +299,33 @@ const Profile = () => {
   const setProfileFormicObj = (profile) => {
     //console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ profile from DAC ="+ JSON.stringify(profile))
     if (profile && profile?.username) {
-      formikObj.username[0] = `${profile?.username}`;
-      formikObj.emailID[0] = `${profile?.emailID}`;
-      formikObj.firstName[0] = `${profile?.firstName}`;
-      formikObj.lastName[0] = `${profile?.lastName}`;
-      formikObj.contact[0] = `${profile?.contact}`;
-      formikObj.location[0] = `${profile?.location}`;
-      formikObj.aboutMe[0] = `${profile?.aboutMe}`;
-      formikObj.otherConnections[0] = profile?.otherConnections || [];
-      formikObj.facebook[0] = `${
-        profile?.connections?.find(({ facebook }) => facebook)?.facebook ?? ""
-      }`;
-      formikObj.twitter[0] = `${
-        profile?.connections?.find(({ twitter }) => twitter)?.twitter ?? ""
-      }`;
-      formikObj.github[0] = `${
-        profile?.connections?.find(({ github }) => github)?.github ?? ""
-      }`;
-      formikObj.reddit[0] = `${
-        profile?.connections?.find(({ reddit }) => reddit)?.reddit ?? ""
-      }`;
-      formikObj.telegram[0] = `${
-        profile?.connections?.find(({ telegram }) => telegram)?.telegram ?? ""
-      }`;
-      formikObj.topicsHidden[0] = profile?.topicsHidden ?? [[]];
-      formikObj.topicsDiscoverable[0] = profile?.topicsDiscoverable ?? [[]];
-      if (profile?.avatar && profile?.avatar[0]?.url) {
-        formikObj.avatar = profile.avatar;
-      }
-      setFormikObj(formikObj);
+      let temp = { ...initailValueFormikObj, ...profile };
+      temp.otherConnections = [];
+      temp.avatar = (profile.avatar && profile.avatar[0]) || {};
+
+      profile?.connections?.forEach((item) => {
+        for (const key in item) {
+          if (
+            ["facebook", "twitter", "reddit", "github", "telegram"].includes(
+              key
+            )
+          ) {
+            temp[key] = item[key];
+          } else {
+            temp.otherConnections.push({
+              channel: key,
+              url: item[key],
+            });
+          }
+        }
+      });
+
+      console.log(temp.otherConnections);
+
+      temp.topicsHidden = profile?.topicsHidden || [];
+      temp.topicsDiscoverable = profile?.topicsDiscoverable || [];
+
+      setFormikObj(temp);
     } else {
       setFormikObj(initailValueFormikObj);
     }
@@ -332,6 +349,9 @@ const Profile = () => {
         { github },
         { reddit },
         { telegram },
+        ...rest.otherConnections
+          .filter((item) => !!item.channel)
+          .map((item) => ({ [item.channel]: item.url })),
       ],
       avatar: [avatar],
     };
@@ -388,14 +408,8 @@ const Profile = () => {
         </Snackbar>
         {isInitialDataAvailable ? (
           <Formik
-            initialValues={
-              getInitValAndValidationSchemaFromSnFormikObj(formikObj)
-                .initialValues
-            }
-            validationSchema={Yup.object(
-              getInitValAndValidationSchemaFromSnFormikObj(formikObj)
-                .validationSchema
-            )}
+            initialValues={formikObj}
+            validationSchema={validationSchema}
             validateOnChange={true}
             validateOnBlur={true}
             enableReinitialize={true}
@@ -596,7 +610,7 @@ const Profile = () => {
                   <FieldArray name="otherConnections">
                     {(arrayHelpers) => (
                       <Fragment>
-                        <Grid container spacing={0} alignItems="flex-end">
+                        <Grid container spacing={0}>
                           {values.otherConnections?.map((item, ind) => (
                             <Fragment key={ind}>
                               <Grid item sm={5} xs={12}>
@@ -621,6 +635,9 @@ const Profile = () => {
                               </Grid>
                               <Grid item sm={1} xs={12}>
                                 <IconButton
+                                  className={classes.removeBtn}
+                                  size="small"
+                                  type="button"
                                   onClick={handleRemoveChannelRow(
                                     arrayHelpers,
                                     ind
@@ -635,6 +652,8 @@ const Profile = () => {
 
                         <Box textAlign="center" mt="1.5rem">
                           <IconButton
+                            className={classes.addBtn}
+                            type="button"
                             onClick={handleAddChannelRow(arrayHelpers)}
                           >
                             <Add />
@@ -652,23 +671,5 @@ const Profile = () => {
     </div>
   );
 };
-
-const avatarList = [
-  "/assets/images/avataaars-1.png",
-  "/assets/images/avataaars-2.png",
-  "/assets/images/avataaars-4.png",
-  "/assets/images/avataaars-5.png",
-  "/assets/images/avataaars-6.png",
-  "/assets/images/avataaars-7.png",
-  "/assets/images/avataaars-8.png",
-  "/assets/images/avataaars-9.png",
-  "/assets/images/avataaars-10.png",
-  "/assets/images/avataaars-11.png",
-  "/assets/images/avataaars-12.png",
-  "/assets/images/avataaars-13.png",
-  "/assets/images/avataaars-14.png",
-  "/assets/images/avataaars-15.png",
-  "/assets/images/avataaars-16.png",
-];
 
 export default Profile;
