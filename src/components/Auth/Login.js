@@ -1,5 +1,5 @@
 import { Button, makeStyles } from "@material-ui/core";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { setLoaderDisplay } from "../../redux/action-reducers-epic/SnLoaderAction";
@@ -33,6 +33,7 @@ const useStyles = makeStyles({
       // width: '100%',
       fontSize: "14px !important",
       padding: 10,
+
     },
   },
   loginFormContainer: {
@@ -57,18 +58,64 @@ const Login = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const userSession = useSelector((state) => state.userSession);
+  const [isMySkyReady, setIsMySkyReady] = useState(false);
 
   useEffect(() => {
-    console.log("##### checkActiveLogin :: userSession = " + userSession);
-    if (userSession?.mySky != null) {
+    (async () => {
+      const { loggedIn, userSession } = await initMySky();
+      //console.log("userSession" + userSession);
+      if (loggedIn == true) {
+        //console.log("$$$$$$$$$ checkActiveLogin :: loggedIn = " + loggedIn);
+        dispatch(setUserSession(userSession));
+        history.push("/userprofile");
+      }
+      else {
+        //console.log("$$$$$$$$$ checkActiveLogin :: loggedIn = " + loggedIn);
+        dispatch(setUserSession(userSession));
+      }
+    })();
+    //console.log("$$$$$$$$$ checkActiveLogin :: Redirecting to  /userprofile ");
+  }, []);
+
+
+  useEffect(() => {
+    //console.log("##### checkActiveLogin :: userSession = " + userSession);
+    if (userSession?.mySky?.checkLogin() == true) {
       history.push("/userprofile");
     }
+    //console.log("########################### BEFORE "+JSON.stringify(userSession));
+    if (userSession?.mySky) {
+      //console.log("######################## after ");
+      setIsMySkyReady(true)
+    }
   }, [userSession]);
+
+
   const handleLogin = async () => {
     let result = null;
     try {
+      const status = await userSession.mySky.requestLoginAccess();
+      if (status) {
+        dispatch(setLoaderDisplay(true));
+        //innocent motherly hull focus gnaw elapse custom sipped dazed eden sifting jump lush inkling
+        dispatch(setUserSession(userSession));
+        const userProfile = await getProfile();
+        dispatch(setUserProfileAction(userProfile));
+        const userPrefrences = await getPreferences();
+        dispatch(setUserPreferencesAction(userPrefrences));
+        dispatch(setLoaderDisplay(false));
+        history.push("/userprofile");
+      }
+    } catch (error) {
+      console.log(error);
+      dispatch(setLoaderDisplay(false));
+    }
+  };
+  const newhandleLogin = async () => {
+    let result = null;
+    try {
       dispatch(setLoaderDisplay(true));
-      //console.log("BEFORE: userSession" + userSession);
+      console.log("BEFORE: userSession" + userSession);
       // if user session and mysky is present and user is already logged in
       if (userSession != null && userSession?.mySky != null) {
         const loggedIn = await userSession.mySky.checkLogin();
@@ -102,7 +149,10 @@ const Login = () => {
         <div>
           {/* <Logo /> */}
           <h3> Manage Your Profile</h3>
-          <Button onClick={handleLogin}> Login using MySky</Button>
+          {isMySkyReady ?
+            <Button onClick={handleLogin}> Login using MySky</Button> :
+            <Button> Loading...</Button>
+          }
           <div className={classes.poweredBy}>
             <span>Powered by </span> <span> Skynet</span>
             {/* <SiteLogoGray /> */}

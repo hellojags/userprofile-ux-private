@@ -154,7 +154,7 @@ export const SnSwitch = ({ label, className, showError, ...props }) => {
   const [field, meta] = useField(props);
   const { submitCount } = useFormikContext();
 
-  return (
+return (
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
       <Switch
@@ -319,7 +319,7 @@ export const SnSelect = ({
   const { setValue } = helpers;
   const { submitCount } = useFormikContext();
 
-  console.log(field.value);
+  //console.log(field.value);
 
   return (
     <div>

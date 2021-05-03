@@ -1,10 +1,11 @@
 import { UserProfileDAC } from "@skynethub/userprofile-library";
 import { SkynetClient } from "skynet-js";
+import { SocialDAC } from "social-dac-library";
 import store from "../redux";
 import { IDB_STORE_SKAPP, setJSONinIDB } from "./SnIndexedDB";
 
 const client = new SkynetClient("https://siasky.net/");
-//const hostApp = "awesomeskynet.hns";
+//const hostApp = "skyprofile.hns";
 const hostApp = "localhost";
 
 export const initMySky = async () => {
@@ -13,9 +14,10 @@ export const initMySky = async () => {
   try {
     // Initialize MySky.
     const mySky = await client.loadMySky(hostApp, { dev: true, debug: true });
-    //const mySky = await client.loadMySky(hostApp,hostApp,null);
+    //const mySky = await client.loadMySky(hostApp);
     const userProfileDAC = new UserProfileDAC();
-    await mySky.loadDacs(userProfileDAC);
+    const socialDAC = new SocialDAC();
+    await mySky.loadDacs(userProfileDAC,socialDAC);
     //await mySky.loadDacs(userProfileDAC);
     // Add additional needed permissions before checkLogin.
     // Can be Permissions object or list of Permissions objects
@@ -23,7 +25,7 @@ export const initMySky = async () => {
     // Try to login silently, requesting permissions for hostApp HNS.
     loggedIn = await mySky.checkLogin(); // check if user is already logged-In
     console.log("checkLogin : loggedIn status: " + loggedIn);
-    userSession = { mySky, dacs: { userProfileDAC } };
+    userSession = { mySky, dacs: { userProfileDAC,socialDAC } };
     //userSession = { mySky, dacs: { userProfileDAC } };
     // if not logged-in
     if (loggedIn) {
@@ -32,7 +34,7 @@ export const initMySky = async () => {
     }
   } catch (e) {
     console.error(e);
-    return userSession;
+    return { loggedIn, userSession };
   }
   return { loggedIn, userSession };
 };
@@ -82,7 +84,7 @@ export const getUserSession = async () => {
 
 export const getUserID = async () => {
   const userSession = await getUserSession();
-  return userSession?.userID ?? null;
+  return userSession?.mySky?.userID() ?? null;
 };
 
 export const getMySky = async () => {
@@ -97,7 +99,10 @@ export const getProfileDAC = async () => {
   const userSession = await getUserSession();
   return userSession?.dacs?.userProfileDAC ?? null;
 };
-
+export const getSocialDAC = async () => {
+  const userSession = await getUserSession();
+  return userSession?.dacs?.socialDAC ?? null;
+}
 export const getFeedDAC = async () => {
   const userSession = await getUserSession();
   return userSession?.dacs?.feedDAC ?? null;
@@ -109,7 +114,7 @@ export const testUserProfile = async (contentRecord) => {
   // INDEX_PREFERENCE: `${DATA_DOMAIN}/preferencesIndex.json`
   try {
     //const contentRecord = getUserSession().dacs.userProfileDAC;
-    let profp = await contentRecord.getProfile(); // path -> skyuser.hns/index_profile.json
+    let profp = await contentRecord.getProfile(); // path -> profile-dac.hns/index_profile.json
     console.log("original Profile", profp);
     let profile = {
       username: "c3po",
@@ -119,7 +124,7 @@ export const testUserProfile = async (contentRecord) => {
       topics: ["War", "Games"],
     };
     console.log("In the method");
-    await contentRecord.setProfile(profile); // Path -> skyuser.hns/localhost/user-profile.json
+    await contentRecord.setProfile(profile); // Path -> profile-dac.hns/localhost/user-profile.json
     let prof = await contentRecord.getProfile();
     console.log("Updated Profile", prof);
     let pref = {

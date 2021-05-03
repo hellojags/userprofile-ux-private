@@ -1,5 +1,5 @@
 import imageCompression from "browser-image-compression";
-import { getProfileDAC, getUserID } from "./skynet-api";
+import { getProfileDAC, getUserID,getSocialDAC } from "./skynet-api";
 import { uploadFile } from "./SnSkynet";
 
 export const getProfile = async () => {
@@ -61,7 +61,21 @@ export const setPreferences = async (preferencesJSON) => {
   return {};
 };
 // ### Following/Followers Functionality ###
-
+export const getFollowingCountForUser = async (userID) => {
+  const socialDAC = await getSocialDAC();
+  const userId = userID ?? (await getUserID());
+  console.log("getFollowingCountForUser:userId" + userId);
+  console.log("getFollowingCountForUser:socialDAC" + socialDAC);
+  const followingCount = await socialDAC.getFollowingCountForUser(userId)
+  console.log("getFollowingCountForUser" + followingCount);
+  // try {
+  //     const contentDAC = await getContentDAC();
+  //     await contentDAC.recordNewContent({ skylink: resultObj.dataLink, metadata: { "contentType": "following", "action": "add" } });
+  //  } catch (e) {
+  //   console.log("contentDAC.recordNewContent : failed =" + e)
+  // }
+  return followingCount;
+}
 //action for upload videos and images
 export const UploadAppLogo = async (
   file,

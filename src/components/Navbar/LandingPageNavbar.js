@@ -1,4 +1,4 @@
-import { Button, Typography } from "@material-ui/core";
+import {Box, Button, Typography } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Badge from "@material-ui/core/Badge";
 import IconButton from "@material-ui/core/IconButton";
@@ -294,11 +294,13 @@ export default function LandingPageNavbar() {
       <AppBar position="static" className={classes.root} color="default">
         <Toolbar className={classes.toolBarRoot}>
           <div className="logo-top">
+          <Box className="logo-top" display="flex" alignItems="center">
             <AccountBoxIcon
               className={classes.AccountBoxIcon}
               style={{ fontSize: 44 }}
             />
-            <Typography className={classes.logo}>SkyUser</Typography>
+            <Typography className={classes.logo}>SkyProfile</Typography>
+            </Box>
           </div>
         </Toolbar>
       </AppBar>

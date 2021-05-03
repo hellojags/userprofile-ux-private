@@ -1,7 +1,7 @@
 export const userProfileDacTest = async (userSession) => {
   try {
     let userprofile = userSession.dacs.userProfileDAC;
-    let userID = userSession.userID;
+    let userID = userSession?.mysky?.userID();
     console.log("Workshop :: ######### SKYID test ######### ");
     let SKyIdProf = await userprofile.getProfile(
       "b114531ddb46d1446806a5f4334729dac0149665893383d4dcba692cfa51f2dc"

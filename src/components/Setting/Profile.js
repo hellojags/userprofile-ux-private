@@ -16,6 +16,7 @@ import {
   Twitter,
 } from "@material-ui/icons";
 import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
+import { ReactComponent as UserProfileBackIcon } from '../../assets/img/icons/user-profile-back.svg'
 import Alert from "@material-ui/lab/Alert";
 import { FieldArray, Formik } from "formik";
 import React, { createRef, Fragment, useEffect, useState } from "react";
@@ -34,6 +35,9 @@ import {
   SnTextInput,
   SnTextInputTag,
 } from "../Utils/SnFormikControlls";
+import {
+  getFollowingCountForUser
+} from "../../service/SnSkappService"
 
 const useStyles = makeStyles((theme) => ({
   ProfileRoot: {
@@ -130,6 +134,35 @@ const useStyles = makeStyles((theme) => ({
         color: "#B4C6CC",
       },
     },
+  },
+  boxHalf: {
+    boxShadow: '15px 15px 25px 0px rgba(29,191,115,0.31)',
+    background: '#fff',
+    padding: ' 10px 1.5rem',
+    '& ._details': {
+      marginLeft: '1rem'
+    },
+    borderRadius: 6,
+    width: 230,
+    maxWidth: '100%'
+  },
+  UserProfile: {
+    width: 50,
+    height: 50,
+    background: 'rgb(29 191 115 / 20%)',
+    borderRadius: '50%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  WraperUserFollowing: {
+    '@media (max-width: 400px)': {
+      flexDirection: 'column',
+      '& .MuiBox-root': {
+        marginLeft: 0,
+        marginBottom: 10
+      }
+    }
   },
   btnUpload: {
     backgroundColor: "#869EA6!important",
@@ -261,6 +294,7 @@ const socialConnectionList = [
 
 const Profile = () => {
   const [isInitialDataAvailable, setIsInitialDataAvailable] = useState(false);
+  const [followingCount, setFollowingCount] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false); // to show Model
   const [isError, setIsError] = useState(false); // to show Model
   const [formikObj, setFormikObj] = useState(initailValueFormikObj); // to store Formik Form data
@@ -277,6 +311,13 @@ const Profile = () => {
     setProfileFormicObj(userProfile);
     setIsInitialDataAvailable(true);
   }, [userProfile]);
+
+  useEffect(() => {
+    (async () => {
+      const count = await getFollowingCountForUser(null);
+      setFollowingCount(count);
+    })();
+  }, [])
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -320,7 +361,7 @@ const Profile = () => {
         }
       });
 
-      console.log(temp.otherConnections);
+      //console.log(temp.otherConnections);
 
       temp.topicsHidden = profile?.topicsHidden || [];
       temp.topicsDiscoverable = profile?.topicsDiscoverable || [];
@@ -431,52 +472,63 @@ const Profile = () => {
                 </h2>
 
                 <Box component="form">
-                  <Box>
-                    <div className="d-none">
-                      <SnUpload
-                        name="files"
-                        source={UPLOAD_SOURCE_NEW_HOSTING_IMG}
-                        ref={imgUploadEleRef}
-                        directoryMode={false}
-                        onUpload={(obj) => handleImgUpload(obj, formik)}
-                        uploadStarted={(e) => setIsLogoUploaded(e)}
-                      />
-                    </div>
-                    <div
-                      className={classes.siteLogo}
-                      onClick={(evt) =>
-                        handleDropZoneClick(evt, imgUploadEleRef)
-                      }
-                    >
-                      {!isLogoUploaded &&
-                        Object.keys(values.avatar).length === 0 && (
-                          <div className={classes.profilePlaceholder}>
-                            <PersonOutlineIcon className={classes.avatarIcon} />
-                          </div>
-                        )}
-                      {!isLogoUploaded &&
-                        Object.keys(values.avatar).length > 0 && (
-                          <img
-                            alt="app"
-                            src={skylinkToUrl(values.avatar.url)}
-                            className={classes.siteLogo}
-                            onClick={(evt) =>
-                              handleDropZoneClick(evt, imgUploadEleRef)
-                            }
-                            name="1"
-                          />
-                        )}
-                      {isLogoUploaded ? (
-                        <Loader
-                          type="Oval"
-                          color="#57C074"
-                          height={50}
-                          width={50}
+                  <Box className={classes.WraperUserFollowing} display="flex" alignItems="center" marginTop="1rem">
+                    <Box marginLeft="1rem" alignItems="center">
+                      <div className="d-none">
+                        <SnUpload
+                          name="files"
+                          source={UPLOAD_SOURCE_NEW_HOSTING_IMG}
+                          ref={imgUploadEleRef}
+                          directoryMode={false}
+                          onUpload={(obj) => handleImgUpload(obj, formik)}
+                          uploadStarted={(e) => setIsLogoUploaded(e)}
                         />
-                      ) : null}
-                    </div>
-                    <div className={classes.inputGuide}>JPG or PNG.</div>
-                    <input type="text" hidden />
+                      </div>
+                      <div
+                        className={classes.siteLogo}
+                        onClick={(evt) =>
+                          handleDropZoneClick(evt, imgUploadEleRef)
+                        }
+                      >
+                        {!isLogoUploaded &&
+                          Object.keys(values.avatar).length === 0 && (
+                            <div className={classes.profilePlaceholder}>
+                              <PersonOutlineIcon className={classes.avatarIcon} />
+                            </div>
+                          )}
+                        {!isLogoUploaded &&
+                          Object.keys(values.avatar).length > 0 && (
+                            <img
+                              alt="app"
+                              src={skylinkToUrl(values.avatar.url)}
+                              className={classes.siteLogo}
+                              onClick={(evt) =>
+                                handleDropZoneClick(evt, imgUploadEleRef)
+                              }
+                              name="1"
+                            />
+                          )}
+                        {isLogoUploaded ? (
+                          <Loader
+                            type="Oval"
+                            color="#57C074"
+                            height={50}
+                            width={50}
+                          />
+                        ) : null}
+                      </div>
+                      <div className={classes.inputGuide}>Upload Image(JPG or PNG) <br />OR </div>
+                      <input type="text" hidden />
+                    </Box>
+                    <Box className={classes.boxHalf} display="flex" marginLeft="1rem" alignItems="center">
+                      <div className={classes.UserProfile}>
+                        <UserProfileBackIcon />
+                      </div>
+                      <div className='_details'>
+                        <h3 className={classes.h3}>{followingCount}</h3>
+                        <p className={classes.p}>Following</p>
+                      </div>
+                    </Box>
                   </Box>
 
                   <Button
@@ -485,7 +537,7 @@ const Profile = () => {
                     disableElevation
                     onClick={generateRandomAvatarUrl(formik.setFieldValue)}
                   >
-                    Choose Random Avatar
+                    Find Avatar for me
                   </Button>
 
                   <Box

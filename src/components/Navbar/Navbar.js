@@ -201,15 +201,13 @@ export default function Navbar() {
 
   useEffect(() => {
     const reloadReduxState = async () => {
-      console.log("#### On Refresh : Reload Redux State ####");
+      //console.log("#### On Refresh : Reload Redux State ####");
       if (userSession?.mySky != null) {
-        console.log("#### On Refresh : Reload Redux State #### [userProfile]");
+        //console.log("#### On Refresh : Reload Redux State #### [userProfile]");
         const userProfile = await getProfile();
         setPerson({ username: userProfile?.username });
         dispatch(setUserProfileAction(userProfile));
-        console.log(
-          "#### On Refresh : Reload Redux State #### [userPrefrences]"
-        );
+        //console.log("#### On Refresh : Reload Redux State #### [userPrefrences]");
         const userPrefrences = await getPreferences();
         dispatch(setUserPreferencesAction(userPrefrences));
       }
@@ -342,7 +340,7 @@ export default function Navbar() {
               className={classes.AccountBoxIcon}
               style={{ fontSize: 44, marginRight: 8 }}
             />
-            <Typography className={classes.logo}>SkyUser</Typography>
+            <Typography className={classes.logo}>SkyProfile</Typography>
           </Box>
           <div className={classes.sectionDesktop}>
             <Box
