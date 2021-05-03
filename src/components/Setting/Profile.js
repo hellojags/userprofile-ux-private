@@ -222,7 +222,7 @@ const validationSchema = Yup.object().shape({
   username: Yup.string().required("This field is required"),
   emailID: Yup.string().email("Invalid email"),
   contact: Yup.string()
-    .matches(/^[0-9+-]+/, "Invalid contact")
+    .matches(/[0-9+-]/, "Invalid contact")
     .max(20),
   otherConnections: Yup.array().of(
     Yup.object().shape({

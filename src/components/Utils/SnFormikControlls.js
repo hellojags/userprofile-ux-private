@@ -154,14 +154,11 @@ export const SnSwitch = ({ label, className, showError, ...props }) => {
   const [field, meta] = useField(props);
   const { submitCount } = useFormikContext();
 
-  console.log(field.value.toString());
-  console.log(field.value.toString() === "true");
-
   return (
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
       <Switch
-        checked={field.value.toString() === "true"}
+        checked={field?.value?.toString() === "true"}
         {...field}
         {...props}
       />
