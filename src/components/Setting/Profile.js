@@ -537,7 +537,7 @@ const Profile = () => {
                     disableElevation
                     onClick={generateRandomAvatarUrl(formik.setFieldValue)}
                   >
-                    Find Avatar for me
+                    Get Avatar
                   </Button>
 
                   <Box

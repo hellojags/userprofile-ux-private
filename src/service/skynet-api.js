@@ -5,16 +5,16 @@ import store from "../redux";
 import { IDB_STORE_SKAPP, setJSONinIDB } from "./SnIndexedDB";
 
 const client = new SkynetClient("https://siasky.net/");
-//const hostApp = "skyprofile.hns";
-const hostApp = "localhost";
+const hostApp = "skyprofile.hns";
+//const hostApp = "localhost";
 
 export const initMySky = async () => {
   let userSession = null;
   let loggedIn = false;
   try {
     // Initialize MySky.
-    const mySky = await client.loadMySky(hostApp, { dev: true, debug: true });
-    //const mySky = await client.loadMySky(hostApp);
+    //const mySky = await client.loadMySky(hostApp, { dev: true, debug: true });
+    const mySky = await client.loadMySky(hostApp);
     const userProfileDAC = new UserProfileDAC();
     const socialDAC = new SocialDAC();
     await mySky.loadDacs(userProfileDAC,socialDAC);
