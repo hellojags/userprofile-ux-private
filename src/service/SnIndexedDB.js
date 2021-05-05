@@ -49,7 +49,7 @@ export const setJSONinIDB = async (key, value, opts) => {
     }
   } catch (err) {
     // This code runs if there were any errors.
-    console.log(err);
+  //console.log(err);
   }
   return result;
 };
@@ -60,12 +60,12 @@ export const setAllinIDB = async (arrayOfJson, opts) => {
     await arrayOfJson.forEach((item) => {
       const key = Object.keys(item)[0];
       const value = item[key];
-      console.log(`${key}:${value}`);
+    //console.log(`${key}:${value}`);
       setJSONinIDB(key, value, opts);
     });
   } catch (err) {
     // This code runs if there were any errors.
-    console.log(err);
+  //console.log(err);
   }
   return result;
 };
@@ -82,10 +82,10 @@ export const getJSONfromIDB = async (key, opts) => {
     }
     // This code runs once the value has been loaded
     // from the offline store.
-    console.log(value);
+  //console.log(value);
   } catch (err) {
     // This code runs if there were any errors.
-    console.log(err);
+  //console.log(err);
   }
   return value;
 };
@@ -104,7 +104,7 @@ export const removeJSONfromIDB = async (key, opts) => {
     }
   } catch (err) {
     // This code runs if there were any errors.
-    console.log(err);
+  //console.log(err);
   }
   return value;
 };
@@ -131,7 +131,7 @@ export const getAllItemsFromIDB = async (opts) => {
           result = [];
           keys = [];
           recordCount = 0;
-          console.log(err);
+        //console.log(err);
         });
       // console.log('result'+result);
     } catch (err) {
@@ -158,7 +158,7 @@ export const getAllItemsFromIDB = async (opts) => {
           result = [];
           keys = [];
           recordCount = 0;
-          console.log(err);
+        //console.log(err);
         });
       // console.log('result'+result);
     } catch (err) {
@@ -185,7 +185,7 @@ export const getAllItemsFromIDB = async (opts) => {
           result = [];
           keys = [];
           recordCount = 0;
-          console.log(err);
+        //console.log(err);
         });
       // console.log('result'+result);
     } catch (err) {
@@ -207,28 +207,28 @@ export const clearAllfromIDB = async (opts) => {
         storeName: IDB_STORE_SKYDB_CACHE,
       })
       .then(() => {
-        console.log("Dropped otherStore");
+      //console.log("Dropped otherStore");
       });
   } else if (opts.store === IDB_STORE_SKAPP_AGGREGATED_DATA) {
     await AggregatedDataIDB.dropInstance({
       name: IDB_NAME,
       storeName: IDB_STORE_SKAPP_AGGREGATED_DATA,
     }).then(() => {
-      console.log("Dropped otherStore");
+    //console.log("Dropped otherStore");
     });
   } else {
     await IndexedDB4SkyDB.dropInstance({
       name: IDB_NAME,
       storeName: IDB_STORE_SKAPP,
     }).then(() => {
-      console.log("Dropped otherStore");
+    //console.log("Dropped otherStore");
     });
   }
   // await IndexedDB4SkyDB.clear().then(function() {
   //     // Run this code once the database has been entirely deleted.
-  //     console.log('Database is now empty.');
+  //   //console.log('Database is now empty.');
   // }).catch(function(err) {
   //     // This code runs if there were any errors
-  //     console.log(err);
+  //   //console.log(err);
   // });
 };

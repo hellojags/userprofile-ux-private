@@ -8,7 +8,7 @@ export const uploadFile = async (file) => {
     const md = await skynetClient.uploadFile(file);
     return md;
   } catch (error) {
-    console.log(error);
+  //console.log(error);
     return null;
   }
 };

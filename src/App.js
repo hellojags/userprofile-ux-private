@@ -5,10 +5,7 @@ import { HashRouter as Router } from "react-router-dom";
 import Nav from "./components/Navbar/Nav";
 import SnLoader from "./components/Utils/SnLoader";
 import "./index.css";
-import { setLoaderDisplay } from "./redux/action-reducers-epic/SnLoaderAction";
-import { setUserSession } from "./redux/action-reducers-epic/SnUserSessionAction";
 import SnRouter from "./router/SnRouter";
-import { initMySky } from "./service/skynet-api";
 import { skappTheme } from "./theme/Theme";
 function App() {
   return (

@@ -23,6 +23,7 @@ import { clearAllfromIDB, IDB_STORE_SKAPP } from "../../service/SnIndexedDB";
 import { getPreferences, getProfile } from "../../service/SnSkappService";
 import { BROWSER_STORAGE } from "../../utils/SnConstants";
 import { skylinkToUrl } from "../../utils/SnUtility";
+import { useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
@@ -181,16 +182,17 @@ const useStyles = makeStyles((theme) => ({
 export default function Navbar() {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const userSession = useSelector((state) => state.userSession);
-  // alert("NAV--userSession"+userSession);
-  // alert("NAV--userSession:userID"+userSession?.userID);
-  // alert("NAV--userSession:mysky"+userSession?.mySky);
-  // alert("NAV--userSession:dac"+userSession?.dacs.userProfileDAC);
+//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession" + userSession);
+//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession:userID" + userSession?.userID);
+//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession:mysky" + userSession?.mySky);
+//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession:dac" + userSession?.dacs.userProfileDAC);
   const [person, setPerson] = useState({ username: "MySky User", url: "" });
 
   const userProfile = useSelector((state) => state.snUserProfile);
@@ -201,13 +203,13 @@ export default function Navbar() {
 
   useEffect(() => {
     const reloadReduxState = async () => {
-      //console.log("#### On Refresh : Reload Redux State ####");
+    //console.log("#### On Refresh : Reload Redux State ####");
       if (userSession?.mySky != null) {
-        //console.log("#### On Refresh : Reload Redux State #### [userProfile]");
+      //console.log("#### On Refresh : Reload Redux State #### [userProfile]");
         const userProfile = await getProfile();
         setPerson({ username: userProfile?.username });
         dispatch(setUserProfileAction(userProfile));
-        //console.log("#### On Refresh : Reload Redux State #### [userPrefrences]");
+      //console.log("#### On Refresh : Reload Redux State #### [userPrefrences]");
         const userPrefrences = await getPreferences();
         dispatch(setUserPreferencesAction(userPrefrences));
       }
@@ -239,7 +241,7 @@ export default function Navbar() {
         try {
           await userSession.mySky.logout();
         } catch (e) {
-          console.log("Error during logout process." + e);
+        //console.log("Error during logout process." + e);
         }
       }
       await clearAllfromIDB({ store: IDB_STORE_SKAPP });
@@ -248,7 +250,7 @@ export default function Navbar() {
       dispatch(setLoaderDisplay(false));
       window.location.href = window.location.origin;
     } catch (e) {
-      console.log("Error during logout process." + e);
+    //console.log("Error during logout process." + e);
       dispatch(setLoaderDisplay(false));
     }
   };

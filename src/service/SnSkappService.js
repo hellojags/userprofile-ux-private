@@ -11,7 +11,7 @@ export const getProfile = async () => {
     return await profileDAC.getProfile(userID);
     //return JSON.parse(BROWSER_STORAGE.getItem('userProfile'));
   } catch (e) {
-    console.log("profileDAC.getProfile : failed =" + e);
+  //console.log("profileDAC.getProfile : failed =" + e);
     return null;
   }
   // getFile_MySky( "userProfile", { skydb: true })
@@ -25,11 +25,11 @@ export const setProfile = async (profileJSON) => {
     const profileDAC = await getProfileDAC();
     await profileDAC.setProfile(profileJSON);
     const profile = await getProfile();
-    console.log("profileDAC.setProfile : After write : =" + profile);
+  //console.log("profileDAC.setProfile : After write : =" + profile);
     //await getContentDAC().recordNewContent({ skylink: resultObj.skylink, metadata: { "contentType": "userprofile", "action": "update" } });
     return profileJSON;
   } catch (e) {
-    console.log("profileDAC.setProfile : failed =" + e);
+  //console.log("profileDAC.setProfile : failed =" + e);
   }
   return {};
   // await putFile_MySky("userProfile", profileJSON, { skydb: true });
@@ -44,7 +44,7 @@ export const getPreferences = async () => {
     return await profileDAC.getPreferences(userID);
     //return JSON.parse(BROWSER_STORAGE.getItem('userProfile'));
   } catch (e) {
-    console.log("profileDAC.getPreferences : failed =" + e);
+  //console.log("profileDAC.getPreferences : failed =" + e);
     return null;
   }
 };
@@ -56,7 +56,7 @@ export const setPreferences = async (preferencesJSON) => {
     //await getContentDAC().recordNewContent({ skylink: resultObj.skylink, metadata: { "contentType": "preferences", "action": "update" } });
     return preferencesJSON;
   } catch (e) {
-    console.log("profileDAC.setPreferences : failed =" + e);
+  //console.log("profileDAC.setPreferences : failed =" + e);
   }
   return {};
 };
@@ -64,15 +64,15 @@ export const setPreferences = async (preferencesJSON) => {
 export const getFollowingCountForUser = async (userID) => {
   const socialDAC = await getSocialDAC();
   const userId = userID ?? (await getUserID());
-  console.log("getFollowingCountForUser:userId" + userId);
-  console.log("getFollowingCountForUser:socialDAC" + socialDAC);
+//console.log("getFollowingCountForUser:userId" + userId);
+//console.log("getFollowingCountForUser:socialDAC" + socialDAC);
   const followingCount = await socialDAC.getFollowingCountForUser(userId)
-  console.log("getFollowingCountForUser" + followingCount);
+//console.log("getFollowingCountForUser" + followingCount);
   // try {
   //     const contentDAC = await getContentDAC();
   //     await contentDAC.recordNewContent({ skylink: resultObj.dataLink, metadata: { "contentType": "following", "action": "add" } });
   //  } catch (e) {
-  //   console.log("contentDAC.recordNewContent : failed =" + e)
+  // //console.log("contentDAC.recordNewContent : failed =" + e)
   // }
   return followingCount;
 }
@@ -122,6 +122,6 @@ export const UploadImagesAction = async (file, getUploadedFile, getFun) => {
     getFun(false);
   } catch (err) {
     getFun(false);
-    console.log(err);
+  //console.log(err);
   }
 };

@@ -231,7 +231,7 @@ const GlobalPrefrences = () => {
     setIsSuccess(false);
   };
 
-  console.log(formikObjGB);
+//console.log(formikObjGB);
 
   return (
     <div className={classes.ProfileRoot}>

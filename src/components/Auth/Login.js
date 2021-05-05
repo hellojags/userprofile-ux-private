@@ -49,8 +49,9 @@ const useStyles = makeStyles({
     "& span": {
       color: "#4E4E4E",
     },
-    marginTop: "2.5rem",
-    marginBottom: "3.5rem",
+    fontSize: "25px",
+    marginTop: "1.5rem",
+    marginBottom: "2.5rem",
   },
 });
 const Login = () => {
@@ -111,7 +112,7 @@ const Login = () => {
         history.push("/userprofile");
       }
     } catch (error) {
-      console.log(error);
+    //console.log(error);
       dispatch(setLoaderDisplay(false));
     }
   };
@@ -119,7 +120,7 @@ const Login = () => {
     let result = null;
     try {
       dispatch(setLoaderDisplay(true));
-      console.log("BEFORE: userSession" + userSession);
+    //console.log("BEFORE: userSession" + userSession);
       // if user session and mysky is present and user is already logged in
       if (userSession != null && userSession?.mySky != null) {
         const loggedIn = await userSession.mySky.checkLogin();
@@ -143,7 +144,7 @@ const Login = () => {
       dispatch(setUserPreferencesAction(userPrefrences));
       dispatch(setLoaderDisplay(false));
     } catch (error) {
-      console.log(error);
+    //console.log(error);
       dispatch(setLoaderDisplay(false));
     }
   };
@@ -154,11 +155,11 @@ const Login = () => {
           {/* <Logo /> */}
           <h3> Manage Your Profile</h3>
           {isMySkyReady ?
-            <Button onClick={handleLogin}> Login using MySky</Button> :
+            <Button onClick={handleLogin}> <h2>Login using MySky</h2></Button> :
             <Button> Loading...</Button>
           }
           <div className={classes.poweredBy}>
-            <span>Powered by </span> <span> Skynet</span>
+            <span>Powered by Skynet</span>
             {/* <SiteLogoGray /> */}
           </div>
         </div>

@@ -5,16 +5,16 @@ import store from "../redux";
 import { IDB_STORE_SKAPP, setJSONinIDB } from "./SnIndexedDB";
 
 const client = new SkynetClient("https://siasky.net/");
-const hostApp = "skyprofile.hns";
-//const hostApp = "localhost";
+//const hostApp = "skyprofile.hns";
+const hostApp = "localhost";
 
 export const initMySky = async () => {
   let userSession = null;
   let loggedIn = false;
   try {
     // Initialize MySky.
-    //const mySky = await client.loadMySky(hostApp, { dev: true, debug: true });
-    const mySky = await client.loadMySky(hostApp);
+    const mySky = await client.loadMySky(hostApp, { dev: true, debug: true });
+    //const mySky = await client.loadMySky(hostApp);
     const userProfileDAC = new UserProfileDAC();
     const socialDAC = new SocialDAC();
     await mySky.loadDacs(userProfileDAC,socialDAC);
@@ -24,7 +24,7 @@ export const initMySky = async () => {
     //await mySky.addPermissions(new Permission("requestor.hns", "domain.hns/path", PermCategory.Hidden, PermType.Write));
     // Try to login silently, requesting permissions for hostApp HNS.
     loggedIn = await mySky.checkLogin(); // check if user is already logged-In
-    console.log("checkLogin : loggedIn status: " + loggedIn);
+  //console.log("checkLogin : loggedIn status: " + loggedIn);
     userSession = { mySky, dacs: { userProfileDAC,socialDAC } };
     //userSession = { mySky, dacs: { userProfileDAC } };
     // if not logged-in
@@ -51,11 +51,11 @@ export const handleMySkyLogin = async (userSession) => {};
 //         // Try to login silently, requesting permissions for hostApp HNS.
 //         //await mySky.logout();
 //         const loggedIn = await mySky.checkLogin();// check if user is already logged-In
-//         console.log("checkLogin : loggedIn status: "+loggedIn);
+//       //console.log("checkLogin : loggedIn status: "+loggedIn);
 //         // Add button action for login.
 //         if (!loggedIn) {
 //             const status = await mySky.requestLoginAccess();//login popup window
-//             console.log("requestLoginAccess status: "+status);
+//           //console.log("requestLoginAccess status: "+status);
 //         }
 //         // Initialize DAC, auto-adding permissions.
 //         const contentDAC = new ContentRecordDAC();
@@ -66,7 +66,7 @@ export const handleMySkyLogin = async (userSession) => {};
 //         //await testUserProfile(userProfileDAC);
 //         return { mySky, dacs: {contentDAC, userProfileDAC,feedDAC}, userID };
 //     } catch (error) {
-//         console.log(error);
+//       //console.log(error);
 //         return {mySky:null, dacs: {}, userID:null};
 //     }
 // }
@@ -115,7 +115,7 @@ export const testUserProfile = async (contentRecord) => {
   try {
     //const contentRecord = getUserSession().dacs.userProfileDAC;
     let profp = await contentRecord.getProfile(); // path -> profile-dac.hns/index_profile.json
-    console.log("original Profile", profp);
+  //console.log("original Profile", profp);
     let profile = {
       username: "c3po",
       aboutMe:
@@ -123,23 +123,23 @@ export const testUserProfile = async (contentRecord) => {
       location: "Tatooine",
       topics: ["War", "Games"],
     };
-    console.log("In the method");
+  //console.log("In the method");
     await contentRecord.setProfile(profile); // Path -> profile-dac.hns/localhost/user-profile.json
     let prof = await contentRecord.getProfile();
-    console.log("Updated Profile", prof);
+  //console.log("Updated Profile", prof);
     let pref = {
       darkmode: true,
       portal: "siasky.net",
     };
     await contentRecord.setPreference(pref);
     let prefr = await contentRecord.getPreference();
-    console.log("preferance", prefr);
+  //console.log("preferance", prefr);
     let proHist = await contentRecord.getProfileHistory();
-    console.log("profileHistory", proHist);
+  //console.log("profileHistory", proHist);
     let prefHist = await contentRecord.getPreferenceHistory();
-    console.log("getPreferanceHistory", prefHist);
+  //console.log("getPreferanceHistory", prefHist);
   } catch (error) {
-    console.log(`error with CR DAC: ${error.message}`);
+  //console.log(`error with CR DAC: ${error.message}`);
   }
 };
 
@@ -157,7 +157,7 @@ export const getFile_MySky = async (dataKey, options) => {
     return result;
   } catch (error) {
     // setErrorMessage(error.message);
-    console.log(`error.message ${error.message}`);
+  //console.log(`error.message ${error.message}`);
     return null;
   }
 };
@@ -183,7 +183,7 @@ export const putFile_MySky = async (dataKey, content, options) => {
     return true;
   } catch (error) {
     // setErrorMessage(error.message);
-    console.log(`error.message ${error.message}`);
+  //console.log(`error.message ${error.message}`);
     return false;
   }
 };
