@@ -287,6 +287,7 @@ const initailValueFormikObj = {
   location: "",
   topicsHidden: [],
   topicsDiscoverable: [],
+  topics:[],
   avatar: {},
   facebook: "",
   twitter: "",
@@ -406,8 +407,8 @@ const setProfileFormicObj = (profile) => {
 
     //console.log(temp.otherConnections);
 
-    temp.topicsHidden = profile?.topicsHidden || [];
-    temp.topicsDiscoverable = profile?.topicsDiscoverable || [];
+    //temp.topicsHidden = profile?.topicsHidden || [];
+    temp.topicsDiscoverable = profile?.topics || [];
 
     setFormikObj(temp);
   } else {
@@ -425,8 +426,30 @@ const submitProfileForm = async ({
   ...rest
 }) => {
   dispatch(setLoaderDisplay(true));
+  // let profileJSON = {
+  //   ...rest,
+  //   connections: [
+  //     { twitter },
+  //     { facebook },
+  //     { github },
+  //     { reddit },
+  //     { telegram },
+  //     ...rest.otherConnections
+  //       .filter((item) => !!item.channel)
+  //       .map((item) => ({ [item.channel]: item.url })),
+  //   ],
+  //   avatar: [avatar],
+  // };
   let profileJSON = {
-    ...rest,
+    version: 1,
+    username : rest.username,
+    firstName : rest.firstName,
+    lastName : rest.lastName,
+    emailID : rest.emailID,
+    contact : rest.contact,
+    aboutMe : rest.aboutMe,
+    location : rest.location,
+    topics: rest.topicsDiscoverable,
     connections: [
       { twitter },
       { facebook },
@@ -439,6 +462,7 @@ const submitProfileForm = async ({
     ],
     avatar: [avatar],
   };
+  //console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BEFORE SAVING PROFILE using DAC ="+ JSON.stringify(profileJSON))
   await setProfile(profileJSON);
   dispatch(setUserProfileAction(profileJSON));
   setIsSuccess(true);
@@ -678,8 +702,8 @@ return (
                   className={`${classes.formRow} formSiteRow`}
                 >
                   <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInputTag
-                      label="Topics Hidden"
+                    <SnTextInputTag disabled
+                      label="Topics Hidden - Disabled (coming soon)"
                       name="topicsHidden"
                       className={classes.input}
                     />
