@@ -116,38 +116,6 @@ const Login = () => {
       dispatch(setLoaderDisplay(false));
     }
   };
-  const newhandleLogin = async () => {
-    let result = null;
-    try {
-      dispatch(setLoaderDisplay(true));
-    //console.log("BEFORE: userSession" + userSession);
-      // if user session and mysky is present and user is already logged in
-      if (userSession != null && userSession?.mySky != null) {
-        const loggedIn = await userSession.mySky.checkLogin();
-        if (!loggedIn) {
-          await userSession.mySky.requestLoginAccess();
-        }
-        return;
-      } else {
-        result = await initMySky();
-        if (!result.loggedIn) {
-          await result.userSession.mySky.requestLoginAccess();
-          let userID = await result.userSession.mySky.userID();
-          result.userSession.userID = userID;
-        }
-      }
-      //innocent motherly hull focus gnaw elapse custom sipped dazed eden sifting jump lush inkling
-      dispatch(setUserSession(result.userSession));
-      const userProfile = await getProfile();
-      dispatch(setUserProfileAction(userProfile));
-      const userPrefrences = await getPreferences();
-      dispatch(setUserPreferencesAction(userPrefrences));
-      dispatch(setLoaderDisplay(false));
-    } catch (error) {
-    //console.log(error);
-      dispatch(setLoaderDisplay(false));
-    }
-  };
   return (
     <div className={classes.loginFormContainer}>
       <form className="login-form">

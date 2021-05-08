@@ -1,6 +1,6 @@
 import imageCompression from "browser-image-compression";
 import { getProfileDAC, getUserID,getSocialDAC } from "./skynet-api";
-import { uploadFile } from "./SnSkynet";
+import { uploadFile } from "./skynet-api";
 
 export const getProfile = async () => {
   try {
@@ -11,7 +11,7 @@ export const getProfile = async () => {
     return await profileDAC.getProfile(userID);
     //return JSON.parse(BROWSER_STORAGE.getItem('userProfile'));
   } catch (e) {
-  //console.log("profileDAC.getProfile : failed =" + e);
+    console.log("profileDAC.getProfile : failed =" + e);
     return null;
   }
   // getFile_MySky( "userProfile", { skydb: true })
@@ -23,13 +23,13 @@ export const setProfile = async (profileJSON) => {
   //BROWSER_STORAGE.setItem('userProfile', JSON.stringify(profileJSON));
   try {
     const profileDAC = await getProfileDAC();
-    await profileDAC.setProfile(profileJSON);
+    const status = await profileDAC.setProfile(profileJSON);
     const profile = await getProfile();
   //console.log("profileDAC.setProfile : After write : =" + profile);
     //await getContentDAC().recordNewContent({ skylink: resultObj.skylink, metadata: { "contentType": "userprofile", "action": "update" } });
     return profileJSON;
   } catch (e) {
-  //console.log("profileDAC.setProfile : failed =" + e);
+  console.log("profileDAC.setProfile : failed =" + e);
   }
   return {};
   // await putFile_MySky("userProfile", profileJSON, { skydb: true });
@@ -44,7 +44,7 @@ export const getPreferences = async () => {
     return await profileDAC.getPreferences(userID);
     //return JSON.parse(BROWSER_STORAGE.getItem('userProfile'));
   } catch (e) {
-  //console.log("profileDAC.getPreferences : failed =" + e);
+    console.log("profileDAC.getPreferences : failed =" + e);
     return null;
   }
 };
@@ -56,7 +56,7 @@ export const setPreferences = async (preferencesJSON) => {
     //await getContentDAC().recordNewContent({ skylink: resultObj.skylink, metadata: { "contentType": "preferences", "action": "update" } });
     return preferencesJSON;
   } catch (e) {
-  //console.log("profileDAC.setPreferences : failed =" + e);
+    console.log("profileDAC.setPreferences : failed =" + e);
   }
   return {};
 };

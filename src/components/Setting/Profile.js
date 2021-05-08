@@ -33,7 +33,7 @@ import { setProfile } from "../../service/SnSkappService";
 import { getUserID } from '../../service/skynet-api';
 import SnUpload from "../../uploadUtil/SnUpload";
 import { UPLOAD_SOURCE_NEW_HOSTING_IMG } from "../../utils/SnConstants";
-import { skylinkToUrl } from "../../utils/SnUtility";
+import { skylinkToUrl } from "../../service/skynet-api";
 import {
   SnInputWithIcon,
   SnTextArea,
@@ -287,7 +287,7 @@ const initailValueFormikObj = {
   location: "",
   topicsHidden: [],
   topicsDiscoverable: [],
-  topics:[],
+  topics: [],
   avatar: {},
   facebook: "",
   twitter: "",
@@ -327,483 +327,481 @@ const Profile = () => {
     setProfileFormicObj(userProfile);
     setIsInitialDataAvailable(true);
     (async () => {
-    //console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ useEffect userProfile "+JSON.stringify(userProfile))
-    //console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ useEffect userSession "+userSession)
+      //console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ useEffect userProfile "+JSON.stringify(userProfile))
+      //console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ useEffect userSession "+userSession)
       const userID = await getUserID();
-        setMyUserID(userID);
+      setMyUserID(userID);
     })();
   }, [userProfile]);
 
   useEffect(() => {
-    if(userSession == null)
-    {
+    if (userSession == null) {
       history.push("/login");
     }
   })
 
   useEffect(() => {
     (async () => {
-    //console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ useEffect userSession "+userSession)
-      if(userSession)
-      {
+      //console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ useEffect userSession "+userSession)
+      if (userSession) {
         const count = await getFollowingCountForUser(null);
         setFollowingCount(count);
       }
     })();
-  },[userSession])
+  }, [userSession])
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setIsSuccess(false);
+  };
+  const copyToClipboard = (e) => {
+    const el = document.createElement('textarea');
+    el.value = MyUserID;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  }
+  const handleDropZoneClick = (evt, dropZoneRef) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    dropZoneRef.current.gridRef.current.click();
+  };
+
+  const handleImgUpload = (obj, formik) => {
+    formik.setFieldValue("avatar", {
+      ext: "jpeg",
+      w: 300,
+      h: 300,
+      url: `sia:${obj.thumbnail}`
+    }, true);
+    setIsLogoUploaded(false);
+  };
+
+  const setProfileFormicObj = (profile) => {
+    //console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ profile from DAC ="+ JSON.stringify(profile))
+    if (profile && profile?.username) {
+      let temp = { ...initailValueFormikObj, ...profile };
+      temp.otherConnections = [];
+      temp.avatar = (profile.avatar && profile.avatar[0]) || {};
+
+      profile?.connections?.forEach((item) => {
+        for (const key in item) {
+          if (
+            ["facebook", "twitter", "reddit", "github", "telegram"].includes(
+              key
+            )
+          ) {
+            temp[key] = item[key];
+          } else {
+            temp.otherConnections.push({
+              channel: key,
+              url: item[key],
+            });
+          }
+        }
+      });
+
+      //console.log(temp.otherConnections);
+
+      //temp.topicsHidden = profile?.topicsHidden || [];
+      temp.topicsDiscoverable = profile?.topics || [];
+
+      setFormikObj(temp);
+    } else {
+      setFormikObj(initailValueFormikObj);
+    }
+  };
+
+  const submitProfileForm = async ({
+    twitter,
+    facebook,
+    reddit,
+    github,
+    telegram,
+    avatar,
+    ...rest
+  }) => {
+    dispatch(setLoaderDisplay(true));
+    let profileJSON = {
+      version: 1,
+      username: rest.username,
+      firstName: rest.firstName,
+      lastName: rest.lastName,
+      emailID: rest.emailID,
+      contact: rest.contact,
+      aboutMe: rest.aboutMe,
+      location: rest.location,
+      topics: rest.topicsDiscoverable,
+      connections: [
+        { twitter },
+        { facebook },
+        { github },
+        { reddit },
+        { telegram },
+        ...rest.otherConnections
+          .filter((item) => !!item.channel)
+          .map((item) => ({ [item.channel]: item.url })),
+      ],
+      avatar: [avatar],
+    };
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BEFORE SAVING PROFILE using DAC =" + JSON.stringify(profileJSON))
+    await setProfile(profileJSON);
+    dispatch(setUserProfileAction(profileJSON));
+    setIsSuccess(true);
+    dispatch(setLoaderDisplay(false));
+  };
+
+  const handleAddChannelRow = (arrayHelpers) => () => {
+    arrayHelpers.push({
+      channel: "",
+      url: "",
+    });
+  };
+
+  const handleRemoveChannelRow = (arrayHelpers, ind) => () => {
+    arrayHelpers.remove(ind);
+  };
+
+  const generateRandomAvatarUrl = (setFieldValue) => () => {
+    let rand = Math.floor(Math.random() * (0 - 99) + 99);
+
+    const imgObj = {
+      ext: "jpeg",
+      w: 300,
+      h: 300,
+      url: `sia://RABycdgWznT8YeIk57CDE9w0CiwWeHi7JoYOyTwq_UaSXQ/${rand}/300`,
+    };
+    setFieldValue("avatar", imgObj);
+  };
   
 
-const handleClose = (event, reason) => {
-  if (reason === "clickaway") {
-    return;
-  }
-  setIsSuccess(false);
-};
-const copyToClipboard = (e) => {
-  const el = document.createElement('textarea');
-  el.value = MyUserID;
-  el.setAttribute('readonly', '');
-  el.style.position = 'absolute';
-  el.style.left = '-9999px';
-  document.body.appendChild(el);
-  el.select();
-  document.execCommand('copy');
-  document.body.removeChild(el);
-}
-const handleDropZoneClick = (evt, dropZoneRef) => {
-  evt.preventDefault();
-  evt.stopPropagation();
-  dropZoneRef.current.gridRef.current.click();
-};
-
-const handleImgUpload = (obj, formik) => {
-  formik.setFieldValue("avatar", { url: `sia:${obj.thumbnail}` }, true);
-  setIsLogoUploaded(false);
-};
-
-const setProfileFormicObj = (profile) => {
-  //console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ profile from DAC ="+ JSON.stringify(profile))
-  if (profile && profile?.username) {
-    let temp = { ...initailValueFormikObj, ...profile };
-    temp.otherConnections = [];
-    temp.avatar = (profile.avatar && profile.avatar[0]) || {};
-
-    profile?.connections?.forEach((item) => {
-      for (const key in item) {
-        if (
-          ["facebook", "twitter", "reddit", "github", "telegram"].includes(
-            key
-          )
-        ) {
-          temp[key] = item[key];
-        } else {
-          temp.otherConnections.push({
-            channel: key,
-            url: item[key],
-          });
-        }
-      }
-    });
-
-    //console.log(temp.otherConnections);
-
-    //temp.topicsHidden = profile?.topicsHidden || [];
-    temp.topicsDiscoverable = profile?.topics || [];
-
-    setFormikObj(temp);
-  } else {
-    setFormikObj(initailValueFormikObj);
-  }
-};
-
-const submitProfileForm = async ({
-  twitter,
-  facebook,
-  reddit,
-  github,
-  telegram,
-  avatar,
-  ...rest
-}) => {
-  dispatch(setLoaderDisplay(true));
-  // let profileJSON = {
-  //   ...rest,
-  //   connections: [
-  //     { twitter },
-  //     { facebook },
-  //     { github },
-  //     { reddit },
-  //     { telegram },
-  //     ...rest.otherConnections
-  //       .filter((item) => !!item.channel)
-  //       .map((item) => ({ [item.channel]: item.url })),
-  //   ],
-  //   avatar: [avatar],
-  // };
-  let profileJSON = {
-    version: 1,
-    username : rest.username,
-    firstName : rest.firstName,
-    lastName : rest.lastName,
-    emailID : rest.emailID,
-    contact : rest.contact,
-    aboutMe : rest.aboutMe,
-    location : rest.location,
-    topics: rest.topicsDiscoverable,
-    connections: [
-      { twitter },
-      { facebook },
-      { github },
-      { reddit },
-      { telegram },
-      ...rest.otherConnections
-        .filter((item) => !!item.channel)
-        .map((item) => ({ [item.channel]: item.url })),
-    ],
-    avatar: [avatar],
-  };
-  //console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BEFORE SAVING PROFILE using DAC ="+ JSON.stringify(profileJSON))
-  await setProfile(profileJSON);
-  dispatch(setUserProfileAction(profileJSON));
-  setIsSuccess(true);
-  dispatch(setLoaderDisplay(false));
-};
-
-const handleAddChannelRow = (arrayHelpers) => () => {
-  arrayHelpers.push({
-    channel: "",
-    url: "",
-  });
-};
-
-const handleRemoveChannelRow = (arrayHelpers, ind) => () => {
-  arrayHelpers.remove(ind);
-};
-
-const generateRandomAvatarUrl = (setFieldValue) => () => {
-  let rand = Math.floor(Math.random() * (0 - 99) + 99);
-
-  const imgObj = {
-    ext: "jpeg",
-    w: 300,
-    h: 300,
-    url: `sia://RABycdgWznT8YeIk57CDE9w0CiwWeHi7JoYOyTwq_UaSXQ/${rand}/300`,
-  };
-
-  setFieldValue("avatar", imgObj);
-};
-
-return (
-  <div className={classes.ProfileRoot}>
-    <Box>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isSuccess}
-        autoHideDuration={5000}
-      >
-        <Alert onClose={handleClose} severity="success">
-          User Profile Successfully Saved!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        aranchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isError}
-        autoHideDuration={5000}
-      >
-        <Alert onClose={handleClose} severity="error">
-          Error Occurred while saving profile!
-        </Alert>
-      </Snackbar>
-      {isInitialDataAvailable ? (
-        <Formik
-          initialValues={formikObj}
-          validationSchema={validationSchema}
-          validateOnChange={true}
-          validateOnBlur={true}
-          enableReinitialize={true}
-          onSubmit={submitProfileForm}
+  return (
+    <div className={classes.ProfileRoot}>
+      <Box>
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={isSuccess}
+          autoHideDuration={5000}
         >
-          {({ values, ...formik }) => (
-            <form onSubmit={formik.handleSubmit}>
-              <h2>
-                Global User Profile{" "}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disableElevation
-                  className={classes.submitBtn}
-                  onClick={formik.handleSubmit}
-                >
-                  <Add /> Save Changes{" "}
-                </Button>
-              </h2>
+          <Alert onClose={handleClose} severity="success">
+            User Profile Successfully Saved!
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          aranchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={isError}
+          autoHideDuration={5000}
+        >
+          <Alert onClose={handleClose} severity="error">
+            Error Occurred while saving profile!
+          </Alert>
+        </Snackbar>
+        {isInitialDataAvailable ? (
+          <Formik
+            initialValues={formikObj}
+            validationSchema={validationSchema}
+            validateOnChange={true}
+            validateOnBlur={true}
+            enableReinitialize={true}
+            onSubmit={submitProfileForm}
+          >
+            {({ values, ...formik }) => (
+             
+              <form onSubmit={formik.handleSubmit}>
+                <h2>
+                  Global User Profile{" "}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disableElevation
+                    className={classes.submitBtn}
+                    onClick={formik.handleSubmit}
+                  >
+                    <Add /> Save Changes{" "}
+                  </Button>
+                </h2>
 
-              <Box display="flex" alignItems="center" >
-                <Box marginRight=".5rem"><h3>UserID : </h3></Box>
-                {MyUserID ? <>
-                  <Tooltip title={MyUserID}>
-                    <Box textOverflow="ellipsis" overflow="hidden" style={{ width: 200, whiteSpace: 'nowrap' }} >
-                      {MyUserID}
-                    </Box>
-                  </Tooltip>
-                  <Button onClick={() => copyToClipboard()}>
-                    <CopyIcon />
-                  </Button></>
-                  :
-                  "Loading UserID..."}
-              </Box>
-              <Box component="form">
-                <Box className={classes.WraperUserFollowing} display="flex" justifyContent="flex-start" alignItems="center" marginTop="1rem">
-                  <Box marginLeft="1rem" alignItems="center">
-                    <div className="d-none">
-                      <SnUpload
-                        name="files"
-                        source={UPLOAD_SOURCE_NEW_HOSTING_IMG}
-                        ref={imgUploadEleRef}
-                        directoryMode={false}
-                        onUpload={(obj) => handleImgUpload(obj, formik)}
-                        uploadStarted={(e) => setIsLogoUploaded(e)}
-                      />
-                    </div>
-                    <div
-                      className={classes.siteLogo}
-                      onClick={(evt) =>
-                        handleDropZoneClick(evt, imgUploadEleRef)
-                      }
-                    >
-                      {!isLogoUploaded &&
-                        Object.keys(values.avatar).length === 0 && (
-                          <div className={classes.profilePlaceholder}>
-                            <PersonOutlineIcon className={classes.avatarIcon} />
-                          </div>
-                        )}
-                      {!isLogoUploaded &&
-                        Object.keys(values.avatar).length > 0 && (
-                          <img
-                            alt="app"
-                            src={skylinkToUrl(values.avatar.url)}
-                            className={classes.siteLogo}
-                            onClick={(evt) =>
-                              handleDropZoneClick(evt, imgUploadEleRef)
-                            }
-                            name="1"
-                          />
-                        )}
-                      {isLogoUploaded ? (
-                        <Loader
-                          type="Oval"
-                          color="#57C074"
-                          height={50}
-                          width={50}
+                <Box display="flex" alignItems="center" >
+                  <Box marginRight=".5rem"><h3>UserID : </h3></Box>
+                  {MyUserID ? <>
+                    <Tooltip title={MyUserID}>
+                      <Box textOverflow="ellipsis" overflow="hidden" style={{ width: 200, whiteSpace: 'nowrap' }} >
+                      {/* <Box> */}
+                        {MyUserID}
+                      </Box>
+                    </Tooltip>
+                    <Button onClick={() => copyToClipboard()}>
+                      <CopyIcon />
+                    </Button></>
+                    :
+                    "Loading UserID..."}
+                </Box>
+                <Box component="form">
+                  <Box className={classes.WraperUserFollowing} display="flex" justifyContent="flex-start" alignItems="center" marginTop="1rem">
+                    <Box marginLeft="1rem" alignItems="center">
+                      <div className="d-none">
+                        <SnUpload
+                          name="files"
+                          source={UPLOAD_SOURCE_NEW_HOSTING_IMG}
+                          ref={imgUploadEleRef}
+                          directoryMode={false}
+                          onUpload={(obj) => handleImgUpload(obj, formik)}
+                          uploadStarted={(e) => setIsLogoUploaded(e)}
                         />
-                      ) : null}
-                    </div>
-                    <input type="text" hidden />
-                    <Box justifyContent="center" alignContent="center">
-                      <div className={classes.inputGuide}>Upload Image(JPG/PNG) <br /><b>OR</b></div>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disableElevation
-                        onClick={generateRandomAvatarUrl(formik.setFieldValue)}
+                      </div>
+                      <div
+                        className={classes.siteLogo}
+                        onClick={(evt) =>
+                          handleDropZoneClick(evt, imgUploadEleRef)
+                        }
                       >
-                        Get Avatar
-                      </Button>
+                        {!isLogoUploaded &&
+                          Object.keys(values.avatar).length === 0 &&(
+                            <div className={classes.profilePlaceholder}>
+                              <PersonOutlineIcon className={classes.avatarIcon} />
+                            </div>
+                          )}
+                          {!isLogoUploaded &&
+                          Object.keys(values.avatar).length > 0 && 
+                          values.avatar.url == ""   &&(
+                            <div className={classes.profilePlaceholder}>
+                              <PersonOutlineIcon className={classes.avatarIcon} />
+                            </div>
+                          )}
+                        {!isLogoUploaded &&
+                          Object.keys(values.avatar).length > 0 && 
+                          values.avatar.url !== ""  && (
+                            <img
+                              alt="Image"
+                              src={skylinkToUrl(values.avatar.url)}
+                              className={classes.siteLogo}
+                              onClick={(evt) =>
+                                handleDropZoneClick(evt, imgUploadEleRef)
+                              }
+                              name="1"
+                            />
+                          )}
+                        {isLogoUploaded ? (
+                          <Loader
+                            type="Oval"
+                            color="#57C074"
+                            height={50}
+                            width={50}
+                          />
+                        ) : null}
+                      </div>
+                      <input type="text" hidden />
+                      <Box justifyContent="center" alignContent="center">
+                        <div className={classes.inputGuide}>Upload Image(JPG/PNG) <br /><b>OR</b></div>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disableElevation
+                          onClick={generateRandomAvatarUrl(formik.setFieldValue)}
+                        >
+                          Get Avatar
+                        </Button>
+                      </Box>
+                    </Box>
+                    <Box className={classes.boxHalf} display="flex" marginLeft="1rem" alignItems="center">
+                      <div className={classes.UserProfile}>
+                        <UserProfileBackIcon />
+                      </div>
+                      <div className='_details'>
+                        <h3 className={classes.h3}>{followingCount}</h3>
+                        <p className={classes.p}>Following</p>
+                      </div>
                     </Box>
                   </Box>
-                  <Box className={classes.boxHalf} display="flex" marginLeft="1rem" alignItems="center">
-                    <div className={classes.UserProfile}>
-                      <UserProfileBackIcon />
-                    </div>
-                    <div className='_details'>
-                      <h3 className={classes.h3}>{followingCount}</h3>
-                      <p className={classes.p}>Following</p>
-                    </div>
-                  </Box>
-                </Box>
 
-                <Box
-                  display="flex"
-                  className={`${classes.formRow} formSiteRow`}
-                >
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInput
-                      label={
-                        <span>
-                          {" "}
-                          Username <span style={{ color: "red" }}>*</span>
-                        </span>
-                      }
-                      name="username"
-                      className={classes.input}
-                      type="text"
-                    />
+                  <Box
+                    display="flex"
+                    className={`${classes.formRow} formSiteRow`}
+                  >
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInput
+                        label={
+                          <span>
+                            {" "}
+                            Username <span style={{ color: "red" }}>*</span>
+                          </span>
+                        }
+                        name="username"
+                        className={classes.input}
+                        type="text"
+                      />
+                    </Box>
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInput
+                        label="First Name"
+                        name="firstName"
+                        className={classes.input}
+                        type="text"
+                      />
+                    </Box>
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInput
+                        label="Last Name"
+                        name="lastName"
+                        className={classes.input}
+                        type="text"
+                      />
+                    </Box>
                   </Box>
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInput
-                      label="First Name"
-                      name="firstName"
-                      className={classes.input}
-                      type="text"
-                    />
+                  <Box
+                    display="flex"
+                    className={`${classes.formRow} formSiteRow`}
+                  >
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInput
+                        label="Location"
+                        name="location"
+                        className={classes.input}
+                        type="text"
+                      />
+                    </Box>
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInput
+                        label="Email"
+                        name="emailID"
+                        className={classes.input}
+                        type="text"
+                      />
+                    </Box>
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInput
+                        label="Contact"
+                        name="contact"
+                        className={classes.input}
+                        type="text"
+                      />
+                    </Box>
                   </Box>
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInput
-                      label="Last Name"
-                      name="lastName"
-                      className={classes.input}
-                      type="text"
-                    />
+                  <Box
+                    display="flex"
+                    className={`${classes.formRow} formSiteRow`}
+                  >
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextArea
+                        label="About me"
+                        name="aboutMe"
+                        className={classes.input}
+                      />
+                    </Box>
                   </Box>
-                </Box>
-                <Box
-                  display="flex"
-                  className={`${classes.formRow} formSiteRow`}
-                >
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInput
-                      label="Location"
-                      name="location"
-                      className={classes.input}
-                      type="text"
-                    />
+                  <Box
+                    display="flex"
+                    className={`${classes.formRow} formSiteRow`}
+                  >
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInputTag disabled
+                        label="Topics Hidden - Disabled (coming soon)"
+                        name="topicsHidden"
+                        className={classes.input}
+                      />
+                    </Box>
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <SnTextInputTag
+                        label="Topics Discoverable"
+                        name="topicsDiscoverable"
+                        className={classes.input}
+                      />
+                    </Box>
                   </Box>
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInput
-                      label="Email"
-                      name="emailID"
-                      className={classes.input}
-                      type="text"
-                    />
-                  </Box>
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInput
-                      label="Contact"
-                      name="contact"
-                      className={classes.input}
-                      type="text"
-                    />
-                  </Box>
-                </Box>
-                <Box
-                  display="flex"
-                  className={`${classes.formRow} formSiteRow`}
-                >
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextArea
-                      label="About me"
-                      name="aboutMe"
-                      className={classes.input}
-                    />
-                  </Box>
-                </Box>
-                <Box
-                  display="flex"
-                  className={`${classes.formRow} formSiteRow`}
-                >
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInputTag disabled
-                      label="Topics Hidden - Disabled (coming soon)"
-                      name="topicsHidden"
-                      className={classes.input}
-                    />
-                  </Box>
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <SnTextInputTag
-                      label="Topics Discoverable"
-                      name="topicsDiscoverable"
-                      className={classes.input}
-                    />
-                  </Box>
-                </Box>
 
-                <Box
-                  display="flex"
-                  className={`${classes.formRow} formSiteRow`}
-                >
-                  <Box className={`${classes.inputContainer}`} flex={1}>
-                    <label>Social Connections</label>
+                  <Box
+                    display="flex"
+                    className={`${classes.formRow} formSiteRow`}
+                  >
+                    <Box className={`${classes.inputContainer}`} flex={1}>
+                      <label>Social Connections</label>
+                    </Box>
                   </Box>
-                </Box>
 
-                <Grid container spacing={0}>
-                  {socialConnectionList.map((item) => (
-                    <Grid item sm={6} xs={12} key={item.name}>
-                      <Box className={`${classes.inputContainer}`}>
-                        <SnInputWithIcon
-                          icon={item.icon}
-                          label={item.name}
-                          name={item.name.toLocaleLowerCase()}
-                          type="text"
-                        />
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-
-                <FieldArray name="otherConnections">
-                  {(arrayHelpers) => (
-                    <Fragment>
-                      <Grid container spacing={0}>
-                        {values.otherConnections?.map((item, ind) => (
-                          <Fragment key={ind}>
-                            <Grid item sm={5} xs={12}>
-                              <Box className={`${classes.inputContainer}`}>
-                                <SnTextInput
-                                  className={classes.input}
-                                  label="Channel"
-                                  name={`otherConnections[${ind}].channel`}
-                                  type="text"
-                                />
-                              </Box>
-                            </Grid>
-                            <Grid item sm={6} xs={12}>
-                              <Box className={`${classes.inputContainer}`}>
-                                <SnTextInput
-                                  className={classes.input}
-                                  label="Channel Url"
-                                  name={`otherConnections[${ind}].url`}
-                                  type="text"
-                                />
-                              </Box>
-                            </Grid>
-                            <Grid item sm={1} xs={12}>
-                              <IconButton
-                                className={classes.removeBtn}
-                                size="small"
-                                type="button"
-                                onClick={handleRemoveChannelRow(
-                                  arrayHelpers,
-                                  ind
-                                )}
-                              >
-                                <Remove />
-                              </IconButton>
-                            </Grid>
-                          </Fragment>
-                        ))}
+                  <Grid container spacing={0}>
+                    {socialConnectionList.map((item) => (
+                      <Grid item sm={6} xs={12} key={item.name}>
+                        <Box className={`${classes.inputContainer}`}>
+                          <SnInputWithIcon
+                            icon={item.icon}
+                            label={item.name}
+                            name={item.name.toLocaleLowerCase()}
+                            type="text"
+                          />
+                        </Box>
                       </Grid>
+                    ))}
+                  </Grid>
 
-                      <Box textAlign="center" mt="1.5rem">
-                        <IconButton
-                          className={classes.addBtn}
-                          type="button"
-                          onClick={handleAddChannelRow(arrayHelpers)}
-                        >
-                          <Add />
-                        </IconButton>
-                      </Box>
-                    </Fragment>
-                  )}
-                </FieldArray>
-              </Box>
-            </form>
-          )}
-        </Formik>
-      ) : null}
-    </Box>
-  </div>
-);
+                  <FieldArray name="otherConnections">
+                    {(arrayHelpers) => (
+                      <Fragment>
+                        <Grid container spacing={0}>
+                          {values.otherConnections?.map((item, ind) => (
+                            <Fragment key={ind}>
+                              <Grid item sm={5} xs={12}>
+                                <Box className={`${classes.inputContainer}`}>
+                                  <SnTextInput
+                                    className={classes.input}
+                                    label="Channel"
+                                    name={`otherConnections[${ind}].channel`}
+                                    type="text"
+                                  />
+                                </Box>
+                              </Grid>
+                              <Grid item sm={6} xs={12}>
+                                <Box className={`${classes.inputContainer}`}>
+                                  <SnTextInput
+                                    className={classes.input}
+                                    label="Channel Url"
+                                    name={`otherConnections[${ind}].url`}
+                                    type="text"
+                                  />
+                                </Box>
+                              </Grid>
+                              <Grid item sm={1} xs={12}>
+                                <IconButton
+                                  className={classes.removeBtn}
+                                  size="small"
+                                  type="button"
+                                  onClick={handleRemoveChannelRow(
+                                    arrayHelpers,
+                                    ind
+                                  )}
+                                >
+                                  <Remove />
+                                </IconButton>
+                              </Grid>
+                            </Fragment>
+                          ))}
+                        </Grid>
+
+                        <Box textAlign="center" mt="1.5rem">
+                          <IconButton
+                            className={classes.addBtn}
+                            type="button"
+                            onClick={handleAddChannelRow(arrayHelpers)}
+                          >
+                            <Add />
+                          </IconButton>
+                        </Box>
+                      </Fragment>
+                    )}
+                  </FieldArray>
+                </Box>
+              </form>
+            )}
+          </Formik>
+        ) : null}
+      </Box>
+    </div>
+  );
 };
 
 export default Profile;

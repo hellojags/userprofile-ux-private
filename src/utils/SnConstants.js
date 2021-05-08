@@ -36,7 +36,7 @@ export const SKYDB_SERIALIZATION_SEPERATOR = "."
 export const UPLOAD = "Upload"
 export const DOWNLOAD = "Download"
 export const PUBLIC_IMPORT = "Public Import"
-export const DEFAULT_PORTAL = "https://siasky.net/"
+
 // export const PUBLIC_SHARE_BASE_URL = "https://siasky.net/AAB-SesrL4TJn8l6F0besVVWYCK8axTjTmffFK4WTBPLWA/?#/";
 export const PUBLIC_SHARE_ROUTE = "public-skapps/"
 // export const DOWNLOAD_PORTAL = process.env.REACT_APP_SIASKYNET_HOST;

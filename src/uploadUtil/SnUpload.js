@@ -11,7 +11,6 @@ import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { SkynetClient } from "skynet-js";
 import { setUploadList } from "../redux/action-reducers-epic/SnUploadListAction";
-import { DEFAULT_PORTAL } from "../utils/SnConstants";
 import {
   generateThumbnailFromVideo,
   getCompressedImageFile,
@@ -30,9 +29,8 @@ const SnUpload = React.forwardRef((props, ref) => {
   const [uploadErr, setUploadErr] = useState(false);
   const [isDir, setIsDir] = useState(false);
   const snUploadListStore = useSelector((state) => state.snUploadListStore);
-  const apiUrl = props.portal != null ? props.portal : DEFAULT_PORTAL;
   const gridRef = useRef();
-  const client = new SkynetClient(apiUrl);
+  const client = new SkynetClient();
 
   const setFileToStore = () => {
     if (props.source) {

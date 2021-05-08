@@ -1,7 +1,6 @@
 import base32Encode from "base32-encode";
 import base64 from "base64-js";
 import imageCompression from "browser-image-compression";
-import { DEFAULT_PORTAL } from "./SnConstants";
 
 export function decodeBase64(input = "") {
   return base64.toByteArray(
@@ -117,37 +116,8 @@ export const videoToImg = async (video) => {
   return file;
 };
 
-export const getPortalFromUserSetting = (userSetting) => {
-  // TODO : extract user selected portal from store . Returning default portal for now.
-  return DEFAULT_PORTAL;
-};
-
-export const skylinkToUrl = (skyLink, userSetting) => {
-  let link = "";
-  const portal = userSetting
-    ? getPortalFromUserSetting(userSetting)
-    : DEFAULT_PORTAL;
-  if (skyLink.indexOf("http://") === 0 || skyLink.indexOf("https://") === 0) {
-    link = skyLink;
-  } else if (skyLink.indexOf("sia://") === 0) {
-    link = skyLink.replace("sia://", portal);
-  } else if (skyLink.indexOf("sia:") === 0) {
-    link = skyLink.replace("sia:", getPortalFromUserSetting(userSetting));
-  } else if (skyLink.length === 46) {
-    link = portal + skyLink;
-  }
-  return link;
-};
-
 export const hashFromSkylinkUploadResponse = (response) =>
   response.skylink.replace("sia:", "");
-
-export const launchSkyLink = (skyLink, userSetting) => {
-  const link = skylinkToUrl(skyLink, userSetting);
-  if (link !== "") {
-    window.open(link, "_blank");
-  }
-};
 
 export const flattenObject = (obj) => {
   const flattened = {};
@@ -187,7 +157,3 @@ export const isStrInObj = (searchStr, obj) => {
     return true;
   }
 };
-export const genHostedAppSkappUrl = (hostedAppDetail) =>
-  hostedAppDetail?.content?.hns &&
-  hostedAppDetail?.content?.storageGateway &&
-  `https://${hostedAppDetail.content.hns}.hns.${hostedAppDetail.content.storageGateway}`;

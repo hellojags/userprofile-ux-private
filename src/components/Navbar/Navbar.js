@@ -22,8 +22,10 @@ import { setUserSession } from "../../redux/action-reducers-epic/SnUserSessionAc
 import { clearAllfromIDB, IDB_STORE_SKAPP } from "../../service/SnIndexedDB";
 import { getPreferences, getProfile } from "../../service/SnSkappService";
 import { BROWSER_STORAGE } from "../../utils/SnConstants";
-import { skylinkToUrl } from "../../utils/SnUtility";
+import { skylinkToUrl } from "../../service/skynet-api";
 import { useHistory } from "react-router-dom";
+import SnDisclaimer from "../Utils/SnDisclaimer";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
@@ -189,10 +191,6 @@ export default function Navbar() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const userSession = useSelector((state) => state.userSession);
-//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession" + userSession);
-//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession:userID" + userSession?.userID);
-//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession:mysky" + userSession?.mySky);
-//console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NAV--userSession:dac" + userSession?.dacs.userProfileDAC);
   const [person, setPerson] = useState({ username: "MySky User", url: "" });
 
   const userProfile = useSelector((state) => state.snUserProfile);
@@ -207,7 +205,8 @@ export default function Navbar() {
       if (userSession?.mySky != null) {
       //console.log("#### On Refresh : Reload Redux State #### [userProfile]");
         const userProfile = await getProfile();
-        setPerson({ username: userProfile?.username });
+        let avatarURl = userProfile?.avatar ? userProfile?.avatar[0]?.url : null;
+        setPerson({ username: userProfile?.username, url: avatarURl });
         dispatch(setUserProfileAction(userProfile));
       //console.log("#### On Refresh : Reload Redux State #### [userPrefrences]");
         const userPrefrences = await getPreferences();
@@ -290,7 +289,7 @@ export default function Navbar() {
                     <p className={classes.helpText}>Help</p>
                 </Box>
             </MenuItem> */}
-      <MenuItem>
+      {/* <MenuItem>
         <IconButton
           aria-label="show 17 new notifications"
           color="inherit"
@@ -301,7 +300,7 @@ export default function Navbar() {
           </Badge>
         </IconButton>
         <p className={classes.notifiText}>Notifications</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem onClick={handleProfileMenuOpen}>
         <Button className={classes.usrIcon}>
           {person.url ? (
@@ -344,6 +343,9 @@ export default function Navbar() {
             />
             <Typography className={classes.logo}>SkyProfile</Typography>
           </Box>
+          {/* <Box display="flex" alignItems="flex-end" flexWrap="wrap" flexShrink={1}>
+            <SnDisclaimer></SnDisclaimer>
+          </Box> */}
           <div className={classes.sectionDesktop}>
             <Box
               display="flex"
