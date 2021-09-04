@@ -1,11 +1,10 @@
-import React from 'react';
-import { Formik, Form, useField, useFormikContext } from 'formik';
-import Select from 'react-select';
-import TagsInput from "react-tagsinput";
-import './taginput.css';
-import { TextareaAutosize, InputBase, Box, Switch  } from '@material-ui/core';
+import { Box, InputBase, Switch, TextareaAutosize } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
-
+import { useField, useFormikContext } from "formik";
+import React from "react";
+import Select from "react-select";
+import TagsInput from "react-tagsinput";
+import "./taginput.css";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -43,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputRoot: {
     color: "inherit",
-    width: '100%',
+    width: "100%",
   },
   inputInput: {
     // padding: theme.spacing(1, 1, 1, 0),
@@ -135,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-}))
+}));
 
 export const SnTextInput = ({ label, className, showError, ...props }) => {
   const [field, meta] = useField(props);
@@ -144,22 +143,26 @@ export const SnTextInput = ({ label, className, showError, ...props }) => {
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
       <input className={className} {...field} {...props} />
-      {(showError ?? true) && submitCount>0 && meta.error ? (
+      {(showError ?? true) && submitCount > 0 && meta.error ? (
         <div className="required-field">{meta.error}</div>
       ) : null}
     </>
   );
 };
 
-
 export const SnSwitch = ({ label, className, showError, ...props }) => {
   const [field, meta] = useField(props);
   const { submitCount } = useFormikContext();
-  return (
+
+return (
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
-      <Switch defaultChecked={field.value} {...field} {...props} />
-      {(showError ?? true) && submitCount>0 && meta.error ? (
+      <Switch
+        checked={field?.value?.toString() === "true"}
+        {...field}
+        {...props}
+      />
+      {(showError ?? true) && submitCount > 0 && meta.error ? (
         <div className="required-field">{meta.error}</div>
       ) : null}
     </>
@@ -173,33 +176,41 @@ export const SnTextArea = ({ label, className, showError, ...props }) => {
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
       <TextareaAutosize
-        {...field} {...props}
+        {...field}
+        {...props}
         className={className}
         rowsMin={4}
       />
-      {(showError ?? true) && submitCount>0 && meta.error ? (
+      {(showError ?? true) && submitCount > 0 && meta.error ? (
         <div className="required-field">{meta.error}</div>
       ) : null}
     </>
   );
 };
 
-export const SnInputWithIcon = ({ icon, label, className, showError, ...props }) => {
+export const SnInputWithIcon = ({
+  icon,
+  label,
+  className,
+  showError,
+  ...props
+}) => {
   const [field, meta] = useField(props);
   const { submitCount } = useFormikContext();
   const classes = useStyles();
-    
+
   return (
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
-      <div  className={`${classes.search} ${classes.Media1249} ${classes.margnBottomMediaQuery}`}>
+      <div
+        className={`${classes.search} ${classes.Media1249} ${classes.margnBottomMediaQuery}`}
+      >
         <Box>
-          <div className={classes.searchIcon}>
-            {icon}
-          </div>
+          <div className={classes.searchIcon}>{icon}</div>
         </Box>
         <InputBase
-          {...field} {...props}
+          {...field}
+          {...props}
           classes={{
             root: classes.inputRoot,
             input: classes.inputInput,
@@ -207,16 +218,15 @@ export const SnInputWithIcon = ({ icon, label, className, showError, ...props })
           inputProps={{ "aria-label": "search" }}
         />
       </div>
-      {(showError ?? true) && submitCount>0 && meta.error ? (
+      {(showError ?? true) && submitCount > 0 && meta.error ? (
         <div className="required-field">{meta.error}</div>
       ) : null}
     </>
   );
 };
-          
+
 export const SnTextInputTag = ({ label, className, showError, ...props }) => {
   const [field, meta, helpers] = useField(props);
-  const { touched, error, value } = meta;
   const { setValue } = helpers;
   const { submitCount } = useFormikContext();
 
@@ -224,83 +234,109 @@ export const SnTextInputTag = ({ label, className, showError, ...props }) => {
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
       <TagsInput
-        {...field} {...props}
-          onChange={(tags) => setValue(tags)}
-          instanceId={props.iid}
-          className={className}
-        />
-        {(showError ?? true) && submitCount>0 && meta.error ? (
-          <div className="required-field">{meta.error}</div>
-        ) : null}
-    </>  
+        {...field}
+        {...props}
+        onChange={(tags) => setValue(tags)}
+        instanceId={props.iid}
+        className={className}
+      />
+      {(showError ?? true) && submitCount > 0 && meta.error ? (
+        <div className="required-field">{meta.error}</div>
+      ) : null}
+    </>
   );
 };
 
 const reactSelectStyles = {
-  control: styles => ({
-      ...styles, backgroundColor: 'white', height: 55, boxShadow: 0, borderColor: '#D9E1EC', color: '#000', borderRadius: 8,
-      '@media only screen and (max-width: 1440px)': {
-          height: 50,
-          // width: '100%',
-          fontSize: 16,
-
-      },
-      '@media only screen and (max-width: 575px)': {
-          height: 43,
-          // width: '100%',
-          fontSize: 14,
-
-      },
-      '&:hover': {
-          borderColor: '#1DBF73'
-      }
+  control: (styles) => ({
+    ...styles,
+    backgroundColor: "white",
+    height: 55,
+    boxShadow: 0,
+    borderColor: "#D9E1EC",
+    color: "#000",
+    borderRadius: 8,
+    "@media only screen and (max-width: 1440px)": {
+      height: 50,
+      // width: '100%',
+      fontSize: 16,
+    },
+    "@media only screen and (max-width: 575px)": {
+      height: 43,
+      // width: '100%',
+      fontSize: 14,
+    },
+    "&:hover": {
+      borderColor: "#1DBF73",
+    },
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => ({
-      ...styles, backgroundColor: isSelected ? '#1DBF73' : '#fff',
-      '&:foucs': {
-          backgroundColor: '#1DBF73'
-      }
+    ...styles,
+    backgroundColor: isSelected ? "#1DBF73" : "#fff",
+    "&:foucs": {
+      backgroundColor: "#1DBF73",
+    },
   }),
 };
 
-export const SnSelect1 = ({ label, className, showError, options, ...props }) => {
+export const SnSelect1 = ({
+  label,
+  className,
+  showError,
+  options,
+  ...props
+}) => {
   const [field, meta] = useField(props);
   return (
     <>
       <label htmlFor={props.id || props.name}>{label}</label>
       <>
-      <Select {...field} {...props}
-        options={options}
-        styles={reactSelectStyles}
-      />
-      </> 
+        <Select
+          {...field}
+          {...props}
+          options={options}
+          styles={reactSelectStyles}
+        />
+      </>
       {(showError ?? true) && meta.error ? (
         <div className="required-field">{meta.error}</div>
-      ) : <></>}
+      ) : (
+        <></>
+      )}
     </>
   );
 };
 
-export const SnSelect = ({ label, className, showError, options, ...props }) => {
+export const SnSelect = ({
+  label,
+  className,
+  showError,
+  options,
+  ...props
+}) => {
   const [field, meta, helpers] = useField(props);
-  const { touched, error, value } = meta;
+  // const { touched, error, value } = meta;
   const { setValue } = helpers;
   const { submitCount } = useFormikContext();
-  return (
 
+  //console.log(field.value);
+
+  return (
     <div>
       <Select
-        value={{ label: field.value, value: field.value } }
+        value={{ label: field.value, value: field.value }}
         options={options}
         name={field.name}
         onChange={(option) => setValue(option.value)}
-        instanceId={props.iid}
+        instanceId={props.id}
         styles={reactSelectStyles}
       />
 
-      {(showError ?? true) && submitCount>0 && meta.error ? (
+      {(showError ?? true) && submitCount > 0 && meta.error ? (
         <div className="required-field">{meta.error}</div>
-      ) : <></>}
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

@@ -11,11 +11,11 @@ export const snUserProfileEpic = (action$) =>
   action$.pipe(
     ofType(EPIC_TY_SET_USER_PROFILE),
     switchMap((action) => {
-      console.log("user setting epic", action)
+      //console.log("user setting epic", action)
       store.dispatch(setLoaderDisplay(true))
       return from(setProfile(action.payload)).pipe(
         map((res) => {
-          console.log(`User Profile:${res}`)
+          //console.log(`User Profile:${res}`)
           store.dispatch(setLoaderDisplay(false))
           return setUserProfileAction(res)
         })

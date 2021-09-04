@@ -1,6 +1,5 @@
-import React from "react"
-
-import "./SnDisclaimer.css"
+import React from "react";
+import "./SnDisclaimer.css";
 
 function SnDisclaimer(props) {
   return (
@@ -8,8 +7,8 @@ function SnDisclaimer(props) {
       <div className="c2-main-div">
         <div className="icon-c2-main-div">
           <svg
-            width="3em"
-            height="3em"
+            width="2em"
+            height="2em"
             viewBox="0 0 16 16"
             className="bi bi-exclamation-circle"
             fill="darkgray"
@@ -23,10 +22,11 @@ function SnDisclaimer(props) {
           </svg>
         </div>
         <div className="desc-c2-div">
-          Content uploaded using Skapp is not encrypted yet.
-        </div>
+            Content stored using this app is unencrypted and public.
+          </div>
+
       </div>
     </div>
-  )
+  );
 }
-export default SnDisclaimer
+export default SnDisclaimer;

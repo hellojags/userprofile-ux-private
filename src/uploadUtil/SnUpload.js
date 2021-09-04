@@ -1,25 +1,24 @@
-import React, { useState, useEffect, useImperativeHandle, useRef } from "react";
-import { BsFileEarmarkArrowUp } from "react-icons/bs";
-import HttpStatus from "http-status-codes";
-import bytes from "bytes";
 import Grid from "@material-ui/core/Grid";
-import Switch from "@material-ui/core/Switch";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import classNames from "classnames";
-import { setUploadList } from "../redux/action-reducers-epic/SnUploadListAction";
-import imageCompression from "browser-image-compression";
-import path from "path-browserify";
 import Snackbar from "@material-ui/core/Snackbar";
-import { useDropzone } from "react-dropzone";
-import { DEFAULT_PORTAL } from "../utils/SnConstants";
-import { getCompressedImageFile, generateThumbnailFromVideo, skylinkToUrl, hashFromSkylinkUploadResponse } from "../utils/SnUtility";
 // import "./sn.upload.scss";
 import MuiAlert from "@material-ui/lab/Alert";
-import CloudUploadOutlinedIcon from "@material-ui/icons/CloudUploadOutlined";
-import { SkynetClient, parseSkylink } from "skynet-js";
-import UploadFile from "./UploadFile";
+import bytes from "bytes";
+import HttpStatus from "http-status-codes";
+import path from "path-browserify";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-
+import { SkynetClient } from "skynet-js";
+import { setUploadList } from "../redux/action-reducers-epic/SnUploadListAction";
+import {
+  generateThumbnailFromVideo,
+  getCompressedImageFile,
+  hashFromSkylinkUploadResponse,
+} from "../utils/SnUtility";
+import UploadFile from "./UploadFile";
+const portal =
+  window.location.hostname === 'localhost' ? 'https://siasky.net' : undefined;
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -31,16 +30,15 @@ const SnUpload = React.forwardRef((props, ref) => {
   const [uploadErr, setUploadErr] = useState(false);
   const [isDir, setIsDir] = useState(false);
   const snUploadListStore = useSelector((state) => state.snUploadListStore);
-  const apiUrl = props.portal != null ? props.portal : DEFAULT_PORTAL;
   const gridRef = useRef();
-  const client = new SkynetClient(apiUrl);
+  const client = new SkynetClient(portal);
 
-  const setFileToStore = ()=>{
+  const setFileToStore = () => {
     if (props.source) {
-      snUploadListStore[props.source] =  files;
+      snUploadListStore[props.source] = files;
       dispatch(setUploadList(snUploadListStore));
     }
-  }
+  };
 
   useEffect(() => {
     setFileToStore();
@@ -54,18 +52,6 @@ const SnUpload = React.forwardRef((props, ref) => {
       inputRef.current.removeAttribute("webkitdirectory");
     }
   }, [props.directoryMode, isDir]);
-
-  const videoToImg = async (video) => {
-    let canvas = document.createElement("canvas");
-    let w = video.videoWidth;
-    let h = video.videoHeight;
-    canvas.width = w;
-    canvas.height = h;
-    let ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, w, h);
-    let file = await imageCompression.canvasToFile(canvas, "image/jpeg");
-    return file;
-  };
 
   const getFilePath = (file) =>
     file.webkitRelativePath || file.path || file.name;
@@ -88,7 +74,6 @@ const SnUpload = React.forwardRef((props, ref) => {
 
     return path.normalize(dir).slice(root.length).split(path.sep)[0];
   };
-
 
   const createUploadErrorMessage = (error) => {
     // The request was made and the server responded with a status code that falls out of the range of 2xx
@@ -180,10 +165,9 @@ const SnUpload = React.forwardRef((props, ref) => {
         try {
           let response;
           if (file.directory) {
-
             const directory = file.files.reduce((accumulator, file) => {
               const path = getRelativeFilePath(file);
-        
+
               return { ...accumulator, [path]: file };
             }, {});
 
@@ -200,18 +184,22 @@ const SnUpload = React.forwardRef((props, ref) => {
             name: file.name,
             contentType: fileType,
             thumbnail:
-              resForCompressed != null ? hashFromSkylinkUploadResponse(resForCompressed) : null,
+              resForCompressed != null
+                ? hashFromSkylinkUploadResponse(resForCompressed)
+                : null,
             contentLength: file.size,
           });
           onFileStateChange(file, {
             status: "complete",
-            url: await client.getSkylinkUrl(hashFromSkylinkUploadResponse(response)),
+            url: await client.getSkylinkUrl(
+              hashFromSkylinkUploadResponse(response)
+            ),
           });
           props.onUploadEnd && props.onUploadEnd();
           //send event to parent
         } catch (error) {
           props.uploadStarted && props.uploadStarted(true);
-    
+
           if (
             error.response &&
             error.response.status === HttpStatus.TOO_MANY_REQUESTS
@@ -235,13 +223,11 @@ const SnUpload = React.forwardRef((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-
     handleDrop,
-    gridRef
-
+    gridRef,
   }));
 
-  const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({
+  const { getRootProps, getInputProps, inputRef } = useDropzone({
     onDrop: handleDrop,
   });
 
@@ -260,10 +246,14 @@ const SnUpload = React.forwardRef((props, ref) => {
                   <CloudUploadOutlinedIcon /> Upload your {(props.directoryMode || isDir) ? "Directory" : "Files"}
                 </h3>
               </span> */}
-        <div container spacing={3} className="drpZone_main_grid"
+        <div
+          container
+          spacing={3}
+          className="drpZone_main_grid"
           {...getRootProps()}
-          ref={gridRef}>
-          <Grid item xs={12} className="MuiDropzoneArea-root" >
+          ref={gridRef}
+        >
+          <Grid item xs={12} className="MuiDropzoneArea-root">
             <div style={{ paddingTop: "20px", paddingBottom: "20px" }}>
               <div>
                 <BsFileEarmarkArrowUp
@@ -281,13 +271,15 @@ const SnUpload = React.forwardRef((props, ref) => {
                   color: "#c5c5c5",
                 }}
               >
-                Drop a {(props.directoryMode || isDir) ? "directory" : "file"} here or
-                        <span style={{ color: "#1ed660", marginLeft: "3px" }}>
+                Drop a {props.directoryMode || isDir ? "directory" : "file"}{" "}
+                here or
+                <span style={{ color: "#1ed660", marginLeft: "3px" }}>
                   click here to upload
-                        </span>
+                </span>
               </span>
             </div>
-          </Grid></div>
+          </Grid>
+        </div>
         {/* </div> */}
         <input id="idInp" {...getInputProps()} className="offscreen" />
       </div>
@@ -309,7 +301,6 @@ const SnUpload = React.forwardRef((props, ref) => {
       </Snackbar>
     </React.Fragment>
   );
-})
-
+});
 
 export default SnUpload;
