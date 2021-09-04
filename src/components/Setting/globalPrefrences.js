@@ -229,6 +229,7 @@ const GlobalPrefrences = () => {
       return;
     }
     setIsSuccess(false);
+    setIsError(false);
   };
 
 //console.log(formikObjGB);
@@ -241,6 +242,7 @@ const GlobalPrefrences = () => {
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
             open={isSuccess}
             autoHideDuration={5000}
+            onClose={handleClose}
           >
             <Alert onClose={handleClose} severity="success">
               User Preferences Successfully Saved!
@@ -252,6 +254,7 @@ const GlobalPrefrences = () => {
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
             open={isError}
             autoHideDuration={5000}
+            onClose={handleClose}
           >
             <Alert onClose={handleClose} severity="error">
               Error Occurred while saving User Preferences!

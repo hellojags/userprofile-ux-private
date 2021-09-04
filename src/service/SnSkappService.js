@@ -62,11 +62,14 @@ export const setPreferences = async (preferencesJSON) => {
 };
 // ### Following/Followers Functionality ###
 export const getFollowingCountForUser = async (userID) => {
+  let followingCount = 0;
+  try
+  {
   const socialDAC = await getSocialDAC();
   const userId = userID ?? (await getUserID());
-//console.log("getFollowingCountForUser:userId" + userId);
-//console.log("getFollowingCountForUser:socialDAC" + socialDAC);
-  const followingCount = await socialDAC.getFollowingCountForUser(userId)
+  console.log("getFollowingCountForUser:userId" + userId);
+  //console.log("getFollowingCountForUser:socialDAC" + socialDAC);
+  followingCount = await socialDAC.getFollowingCountForUser(userId)
 //console.log("getFollowingCountForUser" + followingCount);
   // try {
   //     const contentDAC = await getContentDAC();
@@ -74,6 +77,9 @@ export const getFollowingCountForUser = async (userID) => {
   //  } catch (e) {
   // //console.log("contentDAC.recordNewContent : failed =" + e)
   // }
+  } catch (e) {
+  console.log("getFollowingCountForUser : failed =" + e)
+  }
   return followingCount;
 }
 //action for upload videos and images

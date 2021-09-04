@@ -355,6 +355,7 @@ const Profile = () => {
       return;
     }
     setIsSuccess(false);
+    setIsError(false);
   };
   const copyToClipboard = (e) => {
     const el = document.createElement('textarea');
@@ -488,6 +489,7 @@ const Profile = () => {
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           open={isSuccess}
           autoHideDuration={5000}
+          onClose={handleClose}
         >
           <Alert onClose={handleClose} severity="success">
             User Profile Successfully Saved!

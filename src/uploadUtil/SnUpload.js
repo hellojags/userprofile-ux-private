@@ -17,7 +17,8 @@ import {
   hashFromSkylinkUploadResponse,
 } from "../utils/SnUtility";
 import UploadFile from "./UploadFile";
-
+const portal =
+  window.location.hostname === 'localhost' ? 'https://siasky.net' : undefined;
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -30,7 +31,7 @@ const SnUpload = React.forwardRef((props, ref) => {
   const [isDir, setIsDir] = useState(false);
   const snUploadListStore = useSelector((state) => state.snUploadListStore);
   const gridRef = useRef();
-  const client = new SkynetClient();
+  const client = new SkynetClient(portal);
 
   const setFileToStore = () => {
     if (props.source) {

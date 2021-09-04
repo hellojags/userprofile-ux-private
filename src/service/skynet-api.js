@@ -4,9 +4,10 @@ import { SocialDAC } from "social-dac-library";
 import store from "../redux";
 import { IDB_STORE_SKAPP, setJSONinIDB } from "./SnIndexedDB";
 
-const client = new SkynetClient();
-const hostApp = "skyprofile.hns";
-//const hostApp = "localhost";
+const portal =
+  window.location.hostname === 'localhost' ? 'https://siasky.net' : undefined;
+const client = new SkynetClient(portal);
+const hostApp = window.location.hostname === 'localhost' ? "localhost" : "skyprofile.hns";
 
 export const initMySky = async () => {
   let userSession = null;
