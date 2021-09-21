@@ -84,9 +84,8 @@ export const getCompressedImageFile = async (originalFile) => {
  */
 
 export const generateThumbnailFromVideo = async ({ file, url }) => {
-  let videoResolve = null;
-  const videoPromise = new Promise((resolve) => {
-    videoResolve = resolve;
+  
+  const videoPromise = new Promise(() => {
   });
   let video = document.createElement("video");
   video.crossOrigin = "anonymous";

@@ -23,8 +23,8 @@ export const setProfile = async (profileJSON) => {
   //BROWSER_STORAGE.setItem('userProfile', JSON.stringify(profileJSON));
   try {
     const profileDAC = await getProfileDAC();
-    const status = await profileDAC.setProfile(profileJSON);
-    const profile = await getProfile();
+    await profileDAC.setProfile(profileJSON);
+    //const profile = await getProfile();
   //console.log("profileDAC.setProfile : After write : =" + profile);
     //await getContentDAC().recordNewContent({ skylink: resultObj.skylink, metadata: { "contentType": "userprofile", "action": "update" } });
     return profileJSON;

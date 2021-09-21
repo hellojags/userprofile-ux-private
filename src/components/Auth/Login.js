@@ -66,7 +66,7 @@ const Login = () => {
 
       const { loggedIn, userSession } = await initMySky();
       //console.log(">>>>>>>>>>>>>>>> loggedIn" + loggedIn);
-      if (loggedIn == true) {
+      if (loggedIn === true) {
         //console.log("$$$$$$$$$ checkActiveLogin :: loggedIn = " + loggedIn);
         dispatch(setUserSession(userSession));
         history.push("/userprofile");
@@ -77,14 +77,14 @@ const Login = () => {
       }
     })();
     //console.log("$$$$$$$$$ checkActiveLogin :: Redirecting to  /userprofile ");
-  }, []);
+  }, [dispatch, history]);
 
 
   useEffect(() => {
     (async () => {
     //console.log("##### checkActiveLogin :: userSession = " + userSession);
     let isLoggedIn = await userSession?.mySky?.checkLogin() 
-    if (isLoggedIn == true) {
+    if (isLoggedIn === true) {
       history.push("/userprofile");
     }
     //console.log("########################### BEFORE "+JSON.stringify(userSession));
@@ -93,11 +93,10 @@ const Login = () => {
       setIsMySkyReady(true)
     }
   })();
-  }, [userSession]);
+  }, [userSession,history]);
 
 
   const handleLogin = async () => {
-    let result = null;
     try {
       const status = await userSession.mySky.requestLoginAccess();
       if (status) {

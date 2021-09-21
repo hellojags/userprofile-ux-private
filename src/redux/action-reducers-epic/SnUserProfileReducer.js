@@ -1,7 +1,7 @@
 import { ACT_TY_SET_USER_PROFILE } from "../SnActionConstants"
 import { STORAGE_USER_APP_PROFILE_KEY, BROWSER_STORAGE } from "../../utils/SnConstants"
 
-export default (state = null, action) => {
+const SnUserProfileReducer = (state = null, action) => {
   switch (action.type) {
     case ACT_TY_SET_USER_PROFILE:
       return action.payload
@@ -14,4 +14,5 @@ export default (state = null, action) => {
       }
       return state
   }
-}
+};
+export default SnUserProfileReducer;

@@ -1,6 +1,5 @@
 import { Box, Button, Tooltip, Typography } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
-import Badge from "@material-ui/core/Badge";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -14,7 +13,6 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactComponent as LogoutIcon } from "../../assets/img/icons/exit-log-out.2.svg";
 import { ReactComponent as CustomMenuIcon } from "../../assets/img/icons/Icon ionic-ios-menu.svg";
-import { ReactComponent as NotificationIcon } from "../../assets/img/icons/notification.svg";
 import { setLoaderDisplay } from "../../redux/action-reducers-epic/SnLoaderAction";
 import { setUserPreferencesAction } from "../../redux/action-reducers-epic/SnUserPreferencesAction";
 import { setUserProfileAction } from "../../redux/action-reducers-epic/SnUserProfileAction";
@@ -23,8 +21,6 @@ import { clearAllfromIDB, IDB_STORE_SKAPP } from "../../service/SnIndexedDB";
 import { getPreferences, getProfile } from "../../service/SnSkappService";
 import { BROWSER_STORAGE } from "../../utils/SnConstants";
 import { skylinkToUrl } from "../../service/skynet-api";
-import { useHistory } from "react-router-dom";
-import SnDisclaimer from "../Utils/SnDisclaimer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -184,7 +180,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Navbar() {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -214,7 +209,7 @@ export default function Navbar() {
       }
     };
     reloadReduxState();
-  }, []);
+  }, [dispatch,userSession?.mySky]);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
