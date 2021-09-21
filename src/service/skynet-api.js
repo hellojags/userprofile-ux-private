@@ -120,12 +120,12 @@ export const putFile_MySky = async (dataKey, content, options) => {
   try {
     // get previous skylink
     // create linked list to track history
-    if (options?.historyflag == true) {
+    if (options?.historyflag === true) {
       content.prevSkylink = getFile_MySky(dataKey)?.skylink ?? null;
     }
     // set new data in SkyDB with
     // encrypt it
-    if (options?.encrypt == true) {
+    if (options?.encrypt === true) {
       //const cypherContent = await encryptData(privateKey, publicKey, JSON.stringify(content))
       //status = await skynetClient.db.setJSON(privateKey, dataKey, cypherContent)
     } else {

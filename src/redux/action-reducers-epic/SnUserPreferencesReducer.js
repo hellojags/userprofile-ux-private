@@ -1,7 +1,7 @@
-import { ACT_TY_SET_USER_PREFERENCES } from "../SnActionConstants"
-import { STORAGE_USER_PREFERENCES_KEY, BROWSER_STORAGE } from "../../utils/SnConstants"
+import { ACT_TY_SET_USER_PREFERENCES } from "../SnActionConstants";
+import { STORAGE_USER_PREFERENCES_KEY, BROWSER_STORAGE } from "../../utils/SnConstants";
 
-export default (state = null, action) => {
+const SnUserPreferencesReducer = (state = null, action) => {
   switch (action.type) {
     case ACT_TY_SET_USER_PREFERENCES:
       return action.payload
@@ -14,4 +14,5 @@ export default (state = null, action) => {
       }
       return state
   }
-}
+};
+export default SnUserPreferencesReducer;

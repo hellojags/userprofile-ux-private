@@ -335,7 +335,7 @@ const Profile = () => {
   }, [userProfile]);
 
   useEffect(() => {
-    if (userSession == null) {
+    if (userSession === null) {
       history.push("/login");
     }
   })
@@ -571,7 +571,7 @@ const Profile = () => {
                           )}
                           {!isLogoUploaded &&
                           Object.keys(values.avatar).length > 0 && 
-                          values.avatar.url == ""   &&(
+                          values.avatar.url === ""   &&(
                             <div className={classes.profilePlaceholder}>
                               <PersonOutlineIcon className={classes.avatarIcon} />
                             </div>
@@ -580,7 +580,7 @@ const Profile = () => {
                           Object.keys(values.avatar).length > 0 && 
                           values.avatar.url !== ""  && (
                             <img
-                              alt="Image"
+                              alt=""
                               src={skylinkToUrl(values.avatar.url)}
                               className={classes.siteLogo}
                               onClick={(evt) =>

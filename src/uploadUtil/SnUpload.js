@@ -28,30 +28,23 @@ const SnUpload = React.forwardRef((props, ref) => {
 
   const [files, setFiles] = useState([]);
   const [uploadErr, setUploadErr] = useState(false);
-  const [isDir, setIsDir] = useState(false);
+  const [isDir] = useState(false);
   const snUploadListStore = useSelector((state) => state.snUploadListStore);
   const gridRef = useRef();
   const client = new SkynetClient(portal);
-
-  const setFileToStore = () => {
-    if (props.source) {
-      snUploadListStore[props.source] = files;
-      dispatch(setUploadList(snUploadListStore));
-    }
-  };
+  
+  
 
   useEffect(() => {
+    const setFileToStore = () => {
+      if (props.source) {
+        snUploadListStore[props.source] = files;
+        dispatch(setUploadList(snUploadListStore));
+      }
+    };
     setFileToStore();
     props.onUploadProgress && props.onUploadProgress(files);
-  }, [files]);
-
-  useEffect(() => {
-    if (props.directoryMode || isDir) {
-      inputRef.current.setAttribute("webkitdirectory", "true");
-    } else {
-      inputRef.current.removeAttribute("webkitdirectory");
-    }
-  }, [props.directoryMode, isDir]);
+  }, [files,props,dispatch,snUploadListStore]);
 
   const getFilePath = (file) =>
     file.webkitRelativePath || file.path || file.name;
@@ -221,16 +214,20 @@ const SnUpload = React.forwardRef((props, ref) => {
       await upload();
     }, undefined);
   };
-
+  const { getRootProps, getInputProps, inputRef } = useDropzone({
+    onDrop: handleDrop,
+  });
   useImperativeHandle(ref, () => ({
     handleDrop,
     gridRef,
   }));
-
-  const { getRootProps, getInputProps, inputRef } = useDropzone({
-    onDrop: handleDrop,
-  });
-
+  useEffect(() => {
+    if (props.directoryMode || isDir) {
+      inputRef.current.setAttribute("webkitdirectory", "true");
+    } else {
+      inputRef.current.removeAttribute("webkitdirectory");
+    }
+  }, [props.directoryMode,inputRef, isDir]);
   return (
     <React.Fragment>
       <div className="">

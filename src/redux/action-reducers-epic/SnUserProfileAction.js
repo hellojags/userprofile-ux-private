@@ -1,8 +1,7 @@
 import {
   ACT_TY_SET_USER_PROFILE,
   EPIC_TY_SET_USER_PROFILE
-} from "../SnActionConstants"
-import store from ".."
+} from "../SnActionConstants";
 import { STORAGE_USER_APP_PROFILE_KEY, BROWSER_STORAGE } from "../../utils/SnConstants"
 
 // get internally calls set from epic

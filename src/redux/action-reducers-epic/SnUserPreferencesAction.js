@@ -1,8 +1,7 @@
 import {
   ACT_TY_SET_USER_PREFERENCES,
   EPIC_TY_SET_USER_PREFERENCES,
-} from "../SnActionConstants"
-import store from ".."
+} from "../SnActionConstants";
 import { STORAGE_USER_PREFERENCES_KEY, BROWSER_STORAGE } from "../../utils/SnConstants"
 
 // get internally calls set from epic
